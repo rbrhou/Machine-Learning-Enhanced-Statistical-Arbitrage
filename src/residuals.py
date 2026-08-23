@@ -5,6 +5,7 @@ import pandas as pd
 def extract_idiosyncratic_residuals(
     returns: pd.DataFrame, factor_returns: pd.DataFrame
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
+    
     """Regresses asset returns against systematic PCA factors to extract residuals
     and compute cumulative synthetic spreads.
 
@@ -12,6 +13,7 @@ def extract_idiosyncratic_residuals(
     :param factor_returns: Top systematic factor returns (T x K)
     :return: (daily_residuals, cumulative_spreads)
     """
+    
     residuals = pd.DataFrame(index=returns.index, columns=returns.columns)
 
     # Add constant for OLS intercept (alpha)
