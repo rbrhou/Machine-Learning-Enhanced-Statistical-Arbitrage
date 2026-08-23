@@ -19,10 +19,11 @@ class PCAFactorModel:
         self.factor_returns = None
 
     def fit(self, returns: pd.DataFrame):
+        
         """Computes sample covariance, performs eigendecomposition,
-
         and extracts factor loadings and returns.
         """
+        
         # Standardize / Mean-center returns (T x N) Matrix
         X = returns - returns.mean()
         T, N = X.shape
