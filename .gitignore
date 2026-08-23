@@ -227,3 +227,9 @@ data/
 # --- Environment & Editor ---
 .vscode/
 .DS_Store
+
+# Ignore everything in data/
+data/*
+
+# Except the .gitkeep placeholder file
+!data/.gitkeep
