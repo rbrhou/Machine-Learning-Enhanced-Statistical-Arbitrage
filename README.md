@@ -11,7 +11,7 @@ Traditional statistical arbitrage often relies on static 1-to-1 pairs trading. T
 * **Dimensionality Reduction:** Compresses thousands of correlated returns into a small set of orthogonal systematic risk drivers using Principal Component Analysis (PCA).
 * **Dynamic Asset Clustering:** Applies DBSCAN clustering directly to PCA factor loadings to identify cohesive asset cohorts sharing identical factor sensitivities without relying on fundamental sector classifications.
 * **Systematic Risk Hedging:** Isolates purely idiosyncratic, stock-specific residual spreads by regressing asset returns against the top PCA factor returns.
-* **Statistical Diagnostics:** Enforces stationarity via Augmented Dickey-Fuller (ADF) unit-root tests and screens for negative 1st-order autocorrelation to verify mean-reverting behavior before deploying capital[cite: 1, 5].
+* **Statistical Diagnostics:** Enforces stationarity via Augmented Dickey-Fuller (ADF) unit-root tests and screens for negative 1st-order autocorrelation to verify mean-reverting behavior before deploying capital.
 * **Continuous-Time SDE Calibration:** Models idiosyncratic residual spreads using the Ornstein-Uhlenbeck (OU) process, discretized via an $\text{AR}(1)$ framework to estimate mean-reversion speeds, equilibrium targets, and dimensionless $s$-score trade signals.
 
 ---
