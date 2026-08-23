@@ -7,6 +7,7 @@ from sklearn.preprocessing import StandardScaler
 class FactorClusterer:
 
     def __init__(self, eps: float = 0.5, min_samples: int = 2):
+        
         """Initializes DBSCAN clustering on PCA factor loadings.
 
         :param eps: The maximum distance between two samples for one to be
@@ -15,6 +16,7 @@ class FactorClusterer:
         :param min_samples: The number of samples in a neighborhood for a point
                             to be considered as a core point.
         """
+        
         self.eps = eps
         self.min_samples = min_samples
         self.model = DBSCAN(eps=self.eps, min_samples=self.min_samples)
@@ -22,11 +24,13 @@ class FactorClusterer:
         self.clustered_assets_ = None
 
     def fit(self, factor_loadings: pd.DataFrame) -> "FactorClusterer":
+        
         """Clusters assets dynamically based on their coordinates in PCA factor space.
 
-        :param factor_loadings: DataFrame (N assets x K components) containing
+        :param factor_loadings: DataFrame (N assets x K components) containing 
         PCA loadings.
         """
+        
         # Standardize factor loading coordinates
         scaler = StandardScaler()
         norm_loadings = scaler.fit_transform(factor_loadings.values)
@@ -43,10 +47,12 @@ class FactorClusterer:
         return self
 
     def get_clusters(self) -> dict[int, list[str]]:
+       
         """Returns a dictionary mapping cluster IDs to lists of asset tickers.
 
         Note: Label -1 represents unclustered noise assets.
         """
+        
         if self.clustered_assets_ is None:
             raise ValueError(
                 "The model has not been fitted yet. Call fit() first."
