@@ -10,10 +10,9 @@ class FactorClusterer:
         """Initializes DBSCAN clustering on PCA factor loadings.
 
         :param eps: The maximum distance between two samples for one to be
-
                     considered as in the neighborhood of the other.
+        
         :param min_samples: The number of samples in a neighborhood for a point
-
                             to be considered as a core point.
         """
         self.eps = eps
