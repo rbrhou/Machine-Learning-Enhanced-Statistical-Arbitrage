@@ -27,17 +27,17 @@ Solving the eigenvalue problem extracts systematic factor loadings ($v_i$) and e
 $$\Sigma v_i = \lambda_i v_i$$
 
 
-The top $K$ eigenvectors form synthetic systematic factor return series[cite: 1]:
+The top $K$ eigenvectors form synthetic systematic factor return series:
 $$F = X V_K$$
 
 ### Phase 2: Idiosyncratic Residual Isolation
 Individual asset returns $R_i$ are regressed against systematic factor returns $F$ via Ordinary Least Squares (OLS):
 $$R_{i,t} = \alpha_i + \sum_{k=1}^K \beta_{i,k} F_{k,t} + \epsilon_{i,t}$$
-[cite: 1]
 
-The daily residual $\epsilon_{i,t}$ is cumulatively integrated to form the continuous synthetic spread $x_t$[cite: 1]:
+
+The daily residual $\epsilon_{i,t}$ is cumulatively integrated to form the continuous synthetic spread $x_t$:
 $$x_t = \sum_{s=1}^t \epsilon_{i,s}$$
-[cite: 1]
+
 
 ### Phase 3: Continuous-Time Ornstein-Uhlenbeck Calibration
 The continuous spread $x_t$ is modeled as a mean-reverting stochastic differential equation:
@@ -50,7 +50,7 @@ $$dx_t = \kappa(\theta - x_t)dt + \sigma dW_t$$
 
 Discretized as an $\text{AR}(1)$ specification over time step $\Delta t = \frac{1}{252}$:
 $$x_n = a + b x_{n-1} + \zeta_n, \quad \zeta_n \sim \mathcal{N}(0, \sigma_\zeta^2)$$
-[cite: 1]
+
 
 Continuous parameters are recovered via exact discrete-to-continuous transformations:
 $$\kappa = -\frac{\ln(b)}{\Delta t}, \quad \theta = \frac{a}{1 - b}, \quad \sigma_{\text{eq}} = \frac{\sigma_\zeta}{\sqrt{1 - b^2}}$$
@@ -58,7 +58,7 @@ $$\kappa = -\frac{\ln(b)}{\Delta t}, \quad \theta = \frac{a}{1 - b}, \quad \sigm
 ### Phase 4: Signal Generation Logic
 Trading signals are generated using the standardized, dimensionless $s$-score:
 $$s_t = \frac{x_t - \theta}{\sigma_{\text{eq}}}$$
-[cite: 1]
+
 
 * **Open Long Spread ($+1$):** $s_t < -s_{\text{open}}$ (Spread is oversold; buy asset, short factor basket).
 * **Open Short Spread ($-1$):** $s_t > +s_{\text{open}}$ (Spread is overbought; short asset, buy factor basket).
