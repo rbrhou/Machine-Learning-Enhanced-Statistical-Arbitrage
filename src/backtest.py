@@ -5,7 +5,9 @@ import pandas as pd
 def generate_trading_signals(
     s_scores: pd.Series, s_open: float = 1.25, s_close: float = 0.5
 ) -> pd.Series:
+    
     """Generates discrete positions (-1 for short, 1 for long, 0 for flat)."""
+    
     positions = pd.Series(0, index=s_scores.index, dtype=int)
     current_pos = 0
 
@@ -34,7 +36,9 @@ def generate_trading_signals(
 def evaluate_strategy_pnl(
     positions: pd.Series, daily_residuals: pd.Series
 ) -> pd.DataFrame:
+    
     """Calculates strategy returns, cumulative equity curve, and Sharpe ratio."""
+    
     # Shift positions by 1 day to prevent lookahead bias
     lagged_pos = positions.shift(1).fillna(0)
     strategy_returns = lagged_pos * daily_residuals
