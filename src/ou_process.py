@@ -5,17 +5,20 @@ import pandas as pd
 class OUProcessModel:
 
     def __init__(self, dt: float = 1.0 / 252.0):
+        
         """Initializes the Ornstein-Uhlenbeck calibration engine.
 
         :param dt: Time-step size (default: 1/252 for daily data)
         """
+        
         self.dt = dt
 
     def fit_spread(self, spread_series: pd.Series) -> dict[str, float]:
+        
         """Fits an AR(1) specification to the cumulative spread to extract
-
         kappa, theta, sigma, and the equilibrium standard deviation.
         """
+        
         x = spread_series.values
         x_lag = x[:-1]
         x_curr = x[1:]
@@ -53,12 +56,12 @@ class OUProcessModel:
         }
 
     def compute_s_score(self, spread_series: pd.Series) -> pd.Series:
+        
         """Computes standardized s-score series: s_t = (x_t - theta) / sigma_eq."""
+        
         params = self.fit_spread(spread_series)
         if np.isnan(params["sigma_eq"]) or params["si  gma_eq"] == 0:
             return pd.Series(index=spread_series.index, dtype=float)
 
         s_scores = (spread_series - params["theta"]) / params["sigma_eq"]
         return s_scores
-
-  
