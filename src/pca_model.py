@@ -5,10 +5,12 @@ import pandas as pd
 class PCAFactorModel:
 
     def __init__(self, n_components: int = 5):
+        
         """Initializes the PCA Factor Model.
 
         :param n_components: Number of top systematic eigenfactors to retain.
         """
+        
         self.n_components = n_components
         self.eigenvalues = None
         self.eigenvectors = None
@@ -21,7 +23,7 @@ class PCAFactorModel:
 
         and extracts factor loadings and returns.
         """
-        # Standardize / Mean-center returns (T x N matrix)
+        # Standardize / Mean-center returns (T x N) Matrix
         X = returns - returns.mean()
         T, N = X.shape
 
