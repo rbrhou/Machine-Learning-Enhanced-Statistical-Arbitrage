@@ -8,8 +8,8 @@ class KalmanResidualFilter:
         self,
         n_factors: int,
         process_noise: float = 1e-4,
-        measurement_noise: float = 1e-3,
-    ):
+        measurement_noise: float = 1e-3,):
+        
         """Initializes a Multi-Factor Kalman Filter for dynamic hedge ratio estimation.
 
         :param n_factors: Number of systematic PCA factors (K).
@@ -24,14 +24,15 @@ class KalmanResidualFilter:
     def filter_series(
         self, y: np.ndarray, F: np.ndarray
     ) -> tuple[np.ndarray, np.ndarray]:
+        
         """Runs the Kalman Filter recursion over the historical time series for a
-
         single asset.
 
         :param y: Asset return vector (T,)
         :param F: PCA factor returns matrix (T, K)
         :return: (innovations/residuals of shape (T,), dynamic_betas of shape (T, K+1))
         """
+        
         T = len(y)
         # Initialize state estimate and covariance matrix
         beta_hat = np.zeros(self.dim)
@@ -72,8 +73,8 @@ def extract_idiosyncratic_residuals(
     process_noise: float = 1e-4,
     measurement_noise: float = 1e-3,
 ) -> tuple[pd.DataFrame, pd.DataFrame, dict[str, pd.DataFrame]]:
+    
     """Filters each asset against systematic PCA factors using Kalman Filters
-
     to extract time-varying idiosyncratic residuals and cumulative spreads.
 
     :param returns: Standardized asset returns (T x N)
@@ -82,6 +83,7 @@ def extract_idiosyncratic_residuals(
     :param measurement_noise: Measurement noise variance for observation noise
     :return: (daily_residuals, cumulative_spreads, dynamic_betas_dict)
     """
+    
     residuals = pd.DataFrame(index=returns.index, columns=returns.columns)
     dynamic_betas_dict = {}
 
