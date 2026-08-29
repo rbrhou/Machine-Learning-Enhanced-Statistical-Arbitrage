@@ -17,6 +17,7 @@ class KalmanResidualFilter:
         drift.
         :param measurement_noise: Measurement noise variance (R = sigma_v^2).
         """
+        
         self.dim = n_factors + 1  # Intercept (alpha) + K factor betas
         self.Q = np.eye(self.dim) * process_noise
         self.R = measurement_noise
