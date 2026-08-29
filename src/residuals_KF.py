@@ -92,7 +92,7 @@ def extract_idiosyncratic_residuals(
     feature_names = ["alpha"] + list(factor_returns.columns)
 
     for col in returns.columns:
-        y = returns[col].values
+        y = np.asarray(returns[col].to_numpy(), dtype=float)
         kf = KalmanResidualFilter(
             n_factors=K,
             process_noise=process_noise,
