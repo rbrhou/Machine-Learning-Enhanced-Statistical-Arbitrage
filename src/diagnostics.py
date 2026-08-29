@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from statsmodels.tsa.stattools import adfuller
+from typing import cast
 
 
 class SpreadDiagnostics:
@@ -34,7 +35,9 @@ class SpreadDiagnostics:
         result = adfuller(clean_series, autolag="AIC")
         adf_stat = result[0]
         p_value = result[1]
-        critical_values = result[4]
+        critical_values = cast(
+            tuple[float, float, int, int, dict[str, float], float], result
+        )[4]
 
         return {
             "adf_stat": float(adf_stat),
