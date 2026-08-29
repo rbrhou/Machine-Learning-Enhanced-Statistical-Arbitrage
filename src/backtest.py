@@ -11,9 +11,9 @@ def generate_trading_signals(
     positions = pd.Series(0, index=s_scores.index, dtype=int)
     current_pos = 0
 
-    for t, s in s_scores.items():
+    for i, s in enumerate(s_scores):
         if np.isnan(s):
-            positions[t] = 0
+            positions.iloc[i] = 0
             continue
 
         if current_pos == 0:
@@ -28,7 +28,7 @@ def generate_trading_signals(
             if s <= s_close:
                 current_pos = 0  # Close short
 
-        positions[t] = current_pos
+        positions.iloc[i] = current_pos
 
     return positions
 
