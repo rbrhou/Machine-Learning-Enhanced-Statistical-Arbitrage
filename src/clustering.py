@@ -58,8 +58,14 @@ class FactorClusterer:
                 "The model has not been fitted yet. Call fit() first."
             )
 
+        labels = self.labels_
+        if labels is None:
+            raise ValueError(
+                "The model has not been fitted yet. Call fit() first."
+            )
+
         clusters = {}
-        for cluster_id in np.unique(self.labels_):
+        for cluster_id in np.unique(labels):
             tickers = self.clustered_assets_[
                 self.clustered_assets_["cluster"] == cluster_id
             ].index.tolist()
