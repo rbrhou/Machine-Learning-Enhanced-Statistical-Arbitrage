@@ -24,8 +24,11 @@ def fetch_equity_returns(
         return pd.read_parquet(file_path)
 
     print(f"Downloading data for {len(tickers)} assets via yfinance...")
-    raw_data = yf.download(tickers, start=start_date, end=end_date)["Close"]
-    returns = raw_data.pct_change().dropna()
+    downloaded_data = yf.download(tickers, start=start_date, end=end_date)
+    if downloaded_data is None:
+        raise RuntimeError("yfinance returned no data")
+    raw_data = downloaded_data["Close"]
+    returns = pd.DataFrame(raw_data.pct_change().dropna())
 
     # Cache locally
     returns.to_parquet(file_path)
