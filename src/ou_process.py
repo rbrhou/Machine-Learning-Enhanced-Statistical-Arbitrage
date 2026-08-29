@@ -19,7 +19,7 @@ class OUProcessModel:
         kappa, theta, sigma, and the equilibrium standard deviation.
         """
         
-        x = spread_series.values
+        x = np.asarray(spread_series.to_numpy(dtype=float), dtype=float)
         x_lag = x[:-1]
         x_curr = x[1:]
 
