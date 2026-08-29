@@ -17,12 +17,12 @@ def extract_idiosyncratic_residuals(
     residuals = pd.DataFrame(index=returns.index, columns=returns.columns)
 
     # Add constant for OLS intercept (alpha)
-    F = factor_returns.values
+    F = factor_returns.to_numpy(dtype=float)
     F_design = np.column_stack([np.ones(F.shape[0]), F])
 
     # Run multi-factor regression for each individual asset
     for col in returns.columns:
-        y = returns[col].values
+        y = returns[col].to_numpy(dtype=float)
         # OLS estimation: beta = (F^T F)^(-1) F^T y
         betas, _, _, _ = np.linalg.lstsq(F_design, y, rcond=None)
         # Residuals: epsilon_t = y_t - (alpha + sum(beta_k * F_k,t))
