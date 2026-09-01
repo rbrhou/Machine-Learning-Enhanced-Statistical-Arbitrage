@@ -57,3 +57,42 @@ def evaluate_strategy_pnl(
             "sharpe_ratio": sharpe_ratio,
         }
     )
+
+
+def apply_var_risk_overlay(
+    positions: pd.DataFrame,
+    var_forecasts: np.ndarray,
+    target_risk_limit: float = 0.02,
+    var_index_offset: int = 30,
+) -> pd.DataFrame:
+    
+    """Scales portfolio positions inversely to forecasted 5% VaR and halts
+
+    trading if 1% tail risk exceeds maximum allowable risk limits.
+
+    :param positions: Raw signal DataFrame (T x N)
+    :param var_forecasts: TCN output array (T - seq_len, 2) where col 0 = 1%
+    VaR, col 1 = 5% VaR
+    :param target_risk_limit: Maximum permissible 1% daily drawdown threshold
+    :param var_index_offset: Sequence length burn-in offset
+    """
+    
+    adjusted_positions = positions.copy()
+    valid_dates = positions.index[var_index_offset:]
+
+    for i, date in enumerate(valid_dates):
+        var_1pct = abs(var_forecasts[i, 0])
+        var_5pct = abs(var_forecasts[i, 1])
+
+        # 1. Circuit Breaker / Risk Halt: Flatten if tail risk breaches budget
+        if var_1pct > target_risk_limit:
+            adjusted_positions.loc[date] = 0.0
+            continue
+
+        # 2. Dynamic Volatility Scaling: Scale inversely by 5% VaR
+        scale_factor = (
+            min(1.5, target_risk_limit / var_5pct) if var_5pct > 1e-4 else 1.0
+        )
+        adjusted_positions.loc[date] = positions.loc[date] * scale_factor
+
+    return adjusted_positions
