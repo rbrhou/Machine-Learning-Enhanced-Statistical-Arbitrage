@@ -96,3 +96,40 @@ def apply_var_risk_overlay(
         adjusted_positions.loc[date] = positions.loc[date] * scale_factor
 
     return adjusted_positions
+
+
+def prepare_stat_arb_features(
+    positions: pd.DataFrame,
+    residuals: pd.DataFrame,
+    factor_returns: pd.DataFrame,
+    sigma_eq_dict: dict[str, float],
+) -> tuple[np.ndarray, np.ndarray]:
+    """Builds multi-channel feature tensors from multi-asset positions, Kalman residuals,
+
+    and systematic PCA factor returns.
+    """
+    # 1. Weight positions by inverse equilibrium volatility (1 / sigma_eq)
+    weights = pd.DataFrame(index=positions.index, columns=positions.columns)
+    for col in positions.columns:
+        s_eq = sigma_eq_dict.get(col, 1.0)
+        weights[col] = positions[col] / (s_eq if s_eq > 0 else 1.0)
+
+    # Normalize weights row-wise to prevent leverage explosion
+    sum_abs_weights = weights.abs().sum(axis=1).replace(0, 1.0)
+    norm_weights = weights.div(sum_abs_weights, axis=0)
+
+    # 2. Compute aggregate strategy return (lagged positions prevent lookahead)
+    lagged_weights = norm_weights.shift(1).fillna(0.0)
+    portfolio_returns = (lagged_weights * residuals).sum(axis=1)
+
+    # 3. Multi-Channel Feature Matrix:
+    # [Portfolio Return, Squared Return Proxy, Factor Returns F_1 ... F_K]
+    feature_matrix = np.column_stack(
+        [
+            portfolio_returns.values,
+            (portfolio_returns**2).values,
+            factor_returns.values,
+        ]
+    )
+
+    return feature_matrix, portfolio_returns.values
