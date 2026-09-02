@@ -10,20 +10,20 @@ The quantitative pipeline operates sequentially across four core mathematical do
 
 ### 1. Market Modeling & Dimensionality Reduction
 *   **PCA Factor Extraction:** Compresses the multi-asset variance of a highly correlated equities universe into orthogonal systematic risk factors (eigenvectors) via eigendecomposition.
-*   **Parametric UMAP & DBSCAN Clustering:** Projects linear PCA factor loadings into a dense, non-linear latent manifold using a neural network encoder (Parametric UMAP)[cite: 1]. DBSCAN dynamically isolates highly cohesive, cointegrated asset clusters based on spatial proximity while filtering out erratic assets as noise[cite: 1].
+*   **Parametric UMAP & DBSCAN Clustering:** Projects linear PCA factor loadings into a dense, non-linear latent manifold using a neural network encoder (Parametric UMAP). DBSCAN dynamically isolates highly cohesive, cointegrated asset clusters based on spatial proximity while filtering out erratic assets as noise.
 
 ### 2. Dynamic Residual Extraction
-*   **Multi-Factor Kalman Filter:** Replaces traditional Ordinary Least Squares (OLS) regression to prevent stale hedge ratios[cite: 1]. The State-Space Model continuously updates unobserved factor betas ($\beta_t = \beta_{t-1} + w_t$) as new daily observations arrive ($y_t = \beta_t x_t + v_t$)[cite: 1].
-*   **Pure Idiosyncratic Spreads:** The innovation error ($v_t$) of the Kalman Filter isolates the pure, adaptive idiosyncratic residual spread of each asset, cleanly stripped of broad market influence[cite: 1].
+*   **Multi-Factor Kalman Filter:** Replaces traditional Ordinary Least Squares (OLS) regression to prevent stale hedge ratios. The State-Space Model continuously updates unobserved factor betas ($\beta_t = \beta_{t-1} + w_t$) as new daily observations arrive ($y_t = \beta_t x_t + v_t$).
+*   **Pure Idiosyncratic Spreads:** The innovation error ($v_t$) of the Kalman Filter isolates the pure, adaptive idiosyncratic residual spread of each asset, cleanly stripped of broad market influence.
 
 ### 3. Mean-Reversion & Signal Generation
-*   **Stationarity Diagnostics:** Automated gatekeeping utilizes the Augmented Dickey-Fuller (ADF) test ($p < 0.05$) and lag-1 autocorrelation checks to mathematically prove spread stationarity before capital deployment[cite: 1].
-*   **Continuous-Time SDE Calibration:** Models validated spreads using the Ornstein-Uhlenbeck (OU) process ($dx_t = \kappa(\theta - x_t)dt + \sigma dW_t$) to extract the mean-reversion speed ($\kappa$) and generate standardized $s$-scores for automated execution thresholds[cite: 1].
+*   **Stationarity Diagnostics:** Automated gatekeeping utilizes the Augmented Dickey-Fuller (ADF) test ($p < 0.05$) and lag-1 autocorrelation checks to mathematically prove spread stationarity before capital deployment.
+*   **Continuous-Time SDE Calibration:** Models validated spreads using the Ornstein-Uhlenbeck (OU) process ($dx_t = \kappa(\theta - x_t)dt + \sigma dW_t$) to extract the mean-reversion speed ($\kappa$) and generate standardized $s$-scores for automated execution thresholds.
 
 ### 4. Deep Learning Risk Overlay (TCN)
-*   **Temporal Convolutional Network:** A PyTorch architecture utilizing 1D causal dilated convolutions processes sequential 3D tensors (combining portfolio PnL, squared variance proxies, and macro factors) to forecast next-day Value at Risk (VaR)[cite: 1].
-*   **Multi-Quantile Pinball Loss:** Optimizes directly for the 1% and 5% left-tail risk percentiles[cite: 1].
-*   **Statistical Validation:** The network's unconditional coverage is formally evaluated against an EGARCH baseline using the Kupiec Proportion of Failures (POF) Likelihood Ratio test[cite: 1].
+*   **Temporal Convolutional Network:** A PyTorch architecture utilizing 1D causal dilated convolutions processes sequential 3D tensors (combining portfolio PnL, squared variance proxies, and macro factors) to forecast next-day Value at Risk (VaR).
+*   **Multi-Quantile Pinball Loss:** Optimizes directly for the 1% and 5% left-tail risk percentiles.
+*   **Statistical Validation:** The network's unconditional coverage is formally evaluated against an EGARCH baseline using the Kupiec Proportion of Failures (POF) Likelihood Ratio test.
 
 ---
 
