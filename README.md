@@ -73,12 +73,15 @@ $$\kappa = -\frac{\ln(b)}{\Delta t}, \quad \theta = \frac{a}{1 - b}, \quad \sigm
 Temporal Convolutional Network: A PyTorch architecture processing sequential 3D tensors (combining portfolio PnL, squared variance proxies, and macro factors) to forecast next-day Value at Risk (VaR).
 
 1D Causal Dilated Convolutions: Ensures the filter output at time $t$ is strictly derived from inputs at time $t$ and earlier, explicitly preventing future data leakage. For a 1D sequence $\mathbf{x} \in \mathbb{R}^T$ and a convolutional filter $f$ with dilation factor $d$, the operation expands the receptive field efficiently:
+
 $$y_t = (\mathbf{x} *_d f)(t) = \sum_{i=0}^{k-1} f(i) \cdot \mathbf{x}_{t - d \cdot i}$$
 
 Multi-Quantile Pinball Loss: Optimizes directly for the 1% and 5% left-tail risk percentiles ($q \in \{0.01, 0.05\}$). The loss asymmetrically penalizes overestimation and underestimation to pinpoint the conditional quantile:
+
 $$\mathcal{L}_q(y, \hat{y}_q) = \max\left(q(y - \hat{y}_q), (q - 1)(y - \hat{y}_q)\right) = (y - \hat{y}_q)\left(q - \mathbb{I}_{\{y < \hat{y}_q\}}\right)$$
 
 Total Batch Loss: The aggregated loss across a batch of $N$ samples and target quantiles $Q$ is computed as:
+
 $$\mathcal{L}_{\text{total}} = \sum_{q \in Q} \frac{1}{N} \sum_{i=1}^N \mathcal{L}_q\left(y_i, \hat{y}_{q, i}\right)$$
 
 Statistical Validation: The network's unconditional coverage is formally evaluated against an EGARCH baseline using the Kupiec Proportion of Failures (POF) Likelihood Ratio test. Based on empirical failures $x$ over $N$ observations against target risk level $\alpha$, the statistic follows a $\chi^2(1)$ distribution:
