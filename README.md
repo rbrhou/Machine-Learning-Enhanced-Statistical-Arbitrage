@@ -1,6 +1,6 @@
 # Machine Learning-Enhanced PCA Statistical Arbitrage
 
-An institutional-grade quantitative trading engine implementing the statistical arbitrage framework formalized by Avellaneda & Lee (2010), augmented with unsupervised machine learning (i.e. PCA, DBSCAN, T), parametric UMAP for dimensionality reduction, recursive Kalman Filter idiosyncratic residual extraction, continuous-time stochastic calibration, and TCN-trained VaR engine.
+An institutional-grade quantitative trading engine implementing the statistical arbitrage framework formalized by Avellaneda & Lee (2010), augmented with unsupervised machine learning (i.e. PCA, DBSCAN, T), parametric UMAP for nonlinear dimensionality reduction, recursive Kalman Filter idiosyncratic residual extraction, continuous-time stochastic calibration, and TCN-trained VaR engine.
 
 ---
 
