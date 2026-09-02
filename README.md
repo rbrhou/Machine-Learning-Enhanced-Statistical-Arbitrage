@@ -31,12 +31,15 @@ The quantitative pipeline operates sequentially across four core mathematical do
 
 ### 1. Market Modeling & Dimensionality Reduction
 PCA Factor Extraction: Compresses the multi-asset variance of a highly correlated equities universe into orthogonal systematic risk factors (eigenvectors) via eigendecomposition. The data matrix $X$ is standardized, and the sample covariance matrix $\Sigma$ is computed to map asset relationships:
+
 $$\Sigma = \frac{1}{n-1} X^T X$$
 
 Eigendecomposition: The covariance matrix is decomposed to extract its eigenvalues $\lambda_i$ and eigenvectors $v_i$:
+
 $$\Sigma v_i = \lambda_i v_i$$
 
 Parametric UMAP & DBSCAN Clustering: Projects linear PCA factor loadings into a dense, non-linear latent manifold using a neural network encoder. The UMAP algorithm optimizes the fuzzy set cross-entropy loss to contract cohesive assets into dense topological clusters:
+
 $$\mathcal{L}_{\text{UMAP}} = \sum_{e \in E} \left[ w_h(e) \log\left(\frac{w_h(e)}{w_l(e)}\right) + (1 - w_h(e)) \log\left(\frac{1 - w_h(e)}{1 - w_l(e)}\right) \right]$$
 
 Dynamic Selection: DBSCAN evaluates spatial distances on these UMAP embeddings to isolate highly cohesive, cointegrated asset clusters while filtering out erratic assets as noise.
@@ -45,9 +48,11 @@ Dynamic Selection: DBSCAN evaluates spatial distances on these UMAP embeddings t
 Multi-Factor Kalman Filter: Replaces traditional Ordinary Least Squares (OLS) regression to prevent stale hedge ratios. The State-Space Model continuously updates unobserved factor betas as new daily observations arrive.
 
 Unobserved State Equation: Models the dynamic hedge ratio $\beta_t$ as a random walk, where $w_t$ represents the process noise:
+
 $$\beta_t = \beta_{t-1} + w_t$$
 
 Observation Equation: Models the actual market data, where $y_t$ is the real asset return, $x_t$ represents the PCA factor returns, and $v_t$ is the measurement noise:
+
 $$y_t = \beta_t x_t + v_t$$
 
 Pure Idiosyncratic Spreads: The innovation error ($v_t$) of the Kalman Filter isolates the pure, adaptive idiosyncratic residual spread of each asset, cleanly stripped of broad market influence.
@@ -56,6 +61,7 @@ Pure Idiosyncratic Spreads: The innovation error ($v_t$) of the Kalman Filter is
 Stationarity Diagnostics: Automated gatekeeping utilizes the Augmented Dickey-Fuller (ADF) test ($p < 0.05$) and lag-1 autocorrelation checks to mathematically prove spread stationarity before capital deployment.
 
 Continuous-Time SDE Calibration: Models validated spreads using the Ornstein-Uhlenbeck (OU) process to generate automated entry and exit signals. The SDE features a deterministic drift pulling the spread back to its historical mean $\theta$ with reversion speed $\kappa$, alongside a stochastic diffusion scaled by volatility $\sigma$:
+
 $$dx_t = \kappa(\theta - x_t)dt + \sigma dW_t$$
 
 * $\kappa$: Mean-reversion speed ($\tau_{1/2} = \frac{\ln(2)}{\kappa}$)
@@ -63,10 +69,12 @@ $$dx_t = \kappa(\theta - x_t)dt + \sigma dW_t$$
 * $\sigma$: Diffusion volatility of random market noise
 
 Discretized as an $\text{AR}(1)$ specification over time step $\Delta t = \frac{1}{252}$:
+
 $$x_n = a + b x_{n-1} + \zeta_n, \quad \zeta_n \sim \mathcal{N}(0, \sigma_\zeta^2)$$
 
 
 Continuous parameters are recovered via exact discrete-to-continuous transformations:
+
 $$\kappa = -\frac{\ln(b)}{\Delta t}, \quad \theta = \frac{a}{1 - b}, \quad \sigma_{\text{eq}} = \frac{\sigma_\zeta}{\sqrt{1 - b^2}}$$
 
 ### 4. Deep Learning Risk Overlay (TCN)
