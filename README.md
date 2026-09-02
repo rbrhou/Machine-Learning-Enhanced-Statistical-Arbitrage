@@ -167,7 +167,7 @@ $$\text{LR}_{\text{POF}} = -2 \left[ x \ln(\alpha) + (N - x) \ln(1 - \alpha) - x
 * **Sainburg, T., McInnes, L., & Gentner, T. Q. (2021).** *Parametric UMAP: learning embeddings with deep neural networks for representation and semi-supervised learning.* **Neural Computation**, (arXiv:2009.12981, 2020).
   * *Project Role:* Replaces transductive coordinate optimization with a trainable neural network encoder, allowing the pipeline to project out-of-sample factor loadings without re-optimizing the whole graph.
 * **Ester, M., Kriegel, H.-P., Sander, J., & Xu, X. (1996).** *A density-based algorithm for discovering clusters in large spatial databases with noise.* **Proceedings of the Second International Conference on Knowledge Discovery and Data Mining (KDD-96)**, 226–231.
-  * *Project Role:* Core density-based clustering algorithm (`DBSCAN`) that segments UMAP latent coordinates into cohesive asset cohorts while routing outliers to the noise label (`-1`).
+  * *Project Role:* Core density-based clustering algorithm (DBSCAN) that segments UMAP latent coordinates into cohesive asset cohorts while routing outliers to the noise label (-1).
 
 ### 3. Econometric Tail Risk Diagnostics & Backtesting
 * **Kupiec, P. H. (1995).** *Techniques for verifying the accuracy of risk measurement models.* **The Journal of Derivatives**, 3(2), 73–84.
