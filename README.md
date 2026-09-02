@@ -56,7 +56,7 @@ Pure Idiosyncratic Spreads: The innovation error ($v_t$) of the Kalman Filter is
 Stationarity Diagnostics: Automated gatekeeping utilizes the Augmented Dickey-Fuller (ADF) test ($p < 0.05$) and lag-1 autocorrelation checks to mathematically prove spread stationarity before capital deployment.
 
 Continuous-Time SDE Calibration: Models validated spreads using the Ornstein-Uhlenbeck (OU) process to generate automated entry and exit signals. The SDE features a deterministic drift pulling the spread back to its historical mean $\theta$ with reversion speed $\kappa$, alongside a stochastic diffusion scaled by volatility $\sigma$:
-$$\dx_t = \kappa(\theta - x_t)dt + \sigma dW_t$$
+$$dx_t = \kappa(\theta - x_t)dt + \sigma dW_t$$
 
 * $\kappa$: Mean-reversion speed ($\tau_{1/2} = \frac{\ln(2)}{\kappa}$)
 * $\theta$: Long-term equilibrium spread
