@@ -128,6 +128,34 @@ Statistical Validation: The network's unconditional coverage is formally evaluat
 $$\text{LR}_{\text{POF}} = -2 \left[ x \ln(\alpha) + (N - x) \ln(1 - \alpha) - x \ln\left(\frac{x}{N}\right) - (N - x) \ln\left(1 - \frac{x}{N}\right) \right]$$
 
 
+
+---
+
+## Repository Structure
+```text
+├── data/                                   # Local data cache (Gitignored except .gitkeep)
+│   └── .gitkeep
+├── notebooks/                              # 4-Stage Execution Narrative
+│   ├── 01_factor_decomposition.ipynb       # PCA, Parametric UMAP, and DBSCAN Clustering
+│   ├── 02_kf_residuals_verification.ipynb  # Kalman Filter tracking vs OLS + OU Calibration
+│   ├── 03_portfolio_backtest.ipynb         # Multi-Asset Execution & Transaction Cost Friction
+│   └── 04_tcn_var_risk_overlay.ipynb       # PyTorch TCN VaR Forecasting & Kupiec POF Testing
+├── src/                                    # Core Modular Engine
+│   ├── backtest.py                         # Portfolio aggregation, inverse-vol weighting, and tearsheets
+│   ├── clustering.py                       # Parametric UMAP + DBSCAN density clustering
+│   ├── data_loader.py                      # Local Parquet caching and yfinance ingestion
+│   ├── diagnostics.py                      # ADF stationarity and autocorrelation screening
+│   ├── ou_process.py                       # Ornstein-Uhlenbeck SDE modeling and s-score generation
+│   ├── pca_model.py                        # Eigendecomposition and variance mapping
+│   ├── residuals.py                        # Multi-Factor Kalman Filter State-Space model
+│   └── tcn_var.py                          # PyTorch TCN architecture and Pinball Loss
+├── tests/                                  # Pytest unit testing suite
+│   └── test_engine.py
+├── .gitignore                              # Excludes data/, .pt weights, and Jupyter checkpoints
+└── requirements.txt                        # Python dependencies
+```
+
+---
 ## References 
 ### 1. Foundational Statistical Arbitrage & Multi-Factor Modeling
 * **Avellaneda, M., & Lee, J.-H. (2010).** *Statistical arbitrage in the US equities market.* **Quantitative Finance**, 10(7), 761–782[cite: 1, 4].
@@ -156,31 +184,3 @@ $$\text{LR}_{\text{POF}} = -2 \left[ x \ln(\alpha) + (N - x) \ln(1 - \alpha) - x
 ### 5. Dynamic State-Space Modeling
 * **Montana, G., Triantafyllopoulos, K., & Tsagaris, T. (2009).** *Flexible pairs trading using dynamic linear models.* **Computational Statistics & Data Analysis**, 53(6), 2439–2454.
   * *Project Role:* Theoretical justification for replacing static OLS regressions with recursive Kalman Filter state-space updates to track drifting systematic factor exposures ($\beta_t$)[cite: 1, 2].
----
-
-## Repository Structure
-```text
-├── data/                                   # Local data cache (Gitignored except .gitkeep)
-│   └── .gitkeep
-├── notebooks/                              # 4-Stage Execution Narrative
-│   ├── 01_factor_decomposition.ipynb       # PCA, Parametric UMAP, and DBSCAN Clustering
-│   ├── 02_kf_residuals_verification.ipynb  # Kalman Filter tracking vs OLS + OU Calibration
-│   ├── 03_portfolio_backtest.ipynb         # Multi-Asset Execution & Transaction Cost Friction
-│   └── 04_tcn_var_risk_overlay.ipynb       # PyTorch TCN VaR Forecasting & Kupiec POF Testing
-├── src/                                    # Core Modular Engine
-│   ├── backtest.py                         # Portfolio aggregation, inverse-vol weighting, and tearsheets
-│   ├── clustering.py                       # Parametric UMAP + DBSCAN density clustering
-│   ├── data_loader.py                      # Local Parquet caching and yfinance ingestion
-│   ├── diagnostics.py                      # ADF stationarity and autocorrelation screening
-│   ├── ou_process.py                       # Ornstein-Uhlenbeck SDE modeling and s-score generation
-│   ├── pca_model.py                        # Eigendecomposition and variance mapping
-│   ├── residuals.py                        # Multi-Factor Kalman Filter State-Space model
-│   └── tcn_var.py                          # PyTorch TCN architecture and Pinball Loss
-├── tests/                                  # Pytest unit testing suite
-│   └── test_engine.py
-├── .gitignore                              # Excludes data/, .pt weights, and Jupyter checkpoints
-└── requirements.txt                        # Python dependencies
-
----
-
-
