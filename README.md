@@ -114,6 +114,7 @@ $$\text{LR}_{\text{POF}} = -2 \left[ x \ln(\alpha) + (N - x) \ln(1 - \alpha) - x
 ├── .gitignore                              # Excludes data/, .pt weights, and Jupyter checkpoints
 └── requirements.txt                        # Python dependencies
 
+---
 
 # Machine Learning-Enhanced Statistical Arbitrage Engine
 
