@@ -41,6 +41,7 @@ $$\mathcal{L}_{\text{UMAP}} = \sum_{e \in E} \left[ w_h(e) \log\left(\frac{w_h(e
 
 Dynamic Selection: DBSCAN evaluates spatial distances on these UMAP embeddings to isolate highly cohesive, cointegrated asset clusters while filtering out erratic assets as noise.
 
+
 ### 2. Dynamic Residual Extraction
 Multi-Factor Kalman Filter: Replaces traditional Ordinary Least Squares (OLS) regression to prevent stale hedge ratios. The State-Space Model continuously updates unobserved factor betas as new daily observations arrive.
 
@@ -53,6 +54,7 @@ Observation Equation: Models the actual market data, where $y_t$ is the real ass
 $$y_t = \beta_t x_t + v_t$$
 
 Pure Idiosyncratic Spreads: The innovation error ($v_t$) of the Kalman Filter isolates the pure, adaptive idiosyncratic residual spread of each asset, cleanly stripped of broad market influence.
+
 
 ### 3. Mean-Reversion & Signal Generation
 Before spread modeling, the cumulative idiosyncratic residuals extracted from the Kalman Filter undergo two automated validation filters to prune non-convergent assets:
@@ -95,6 +97,15 @@ When the stochastic diffusion pushes the $s$-score significantly far from zero, 
 * **Open Long Spread ($+1$):** $s_t < -s_{\text{open}}$ (Spread is oversold; buy asset, short factor basket).
 * **Open Short Spread ($-1$):** $s_t > +s_{\text{open}}$ (Spread is overbought; short asset, buy factor basket).
 * **Close Position ($0$):** $\vert{}s_t\vert{} \le s_{\text{close}}$ (Spread has reverted to equilibrium $\theta$).
+
+### Dynamic Risk Parity Allocation
+
+Capital is allocated across active cluster members using inverse equilibrium volatility weighting:
+
+$$w_{i, t} \propto \frac{\text{Signal}_{i, t}}{\sigma_{\text{eq}, i}}$$
+
+Portfolio weights are normalized row-wise to enforce target gross leverage limits ($\sum |w_{i,t}| \le L_{\text{max}}$)[cite: 1]. This ensures quieter spreads receive proportionally larger capital allocations while volatile spreads are scaled down, equalizing tail-risk contributions across the strategy
+
 
 ### 4. Deep Learning Risk Overlay (TCN)
 Temporal Convolutional Network: A PyTorch architecture processing sequential 3D tensors (combining portfolio PnL, squared variance proxies, and macro factors) to forecast next-day Value at Risk (VaR).
