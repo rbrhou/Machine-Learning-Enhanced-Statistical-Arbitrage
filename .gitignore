@@ -233,3 +233,51 @@ data/*
 
 # Except the .gitkeep placeholder file
 !data/.gitkeep
+
+# Bytecode & Python Runtime
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual Environments
+.venv/
+venv/
+env/
+ENV/
+
+# Data & Cache Directories
+data/*
+!data/.gitkeep
+*.csv
+*.parquet
+*.feather
+*.h5
+
+# Deep Learning Artifacts & Model Checkpoints (PyTorch & TensorFlow)
+*.pt
+*.pth
+*.ckpt
+checkpoints/
+saved_models/
+*.pb
+*.tflite
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/*
+
+# Testing & Code Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# IDE & System Files
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/settings.json
+.idea/
