@@ -66,7 +66,7 @@ Where:
 * **$\kappa$ (Mean Reversion Speed):** The deterministic pull or "rubber band" effect. A high $\kappa$ indicates the spread violently snaps back to $\theta$, while a low $\kappa$ indicates sluggish convergence.
 * **$\sigma dW_t$ (Stochastic Diffusion):** The unpredictable market noise that continuously perturbs the spread away from equilibrium.
 
-#### Discrete-Time AR(1) Calibration
+### Discrete-Time AR(1) Calibration
 Because our market data is sampled at discrete daily intervals ($\Delta t = 1/252$) rather than continuously, the SDE is mathematically mapped to an exact Autoregressive AR(1) process for calibration:
 $$x_n = a + b x_{n-1} + \zeta_n$$
 
@@ -77,7 +77,7 @@ By fitting the cumulative daily residuals via Ordinary Least Squares (OLS) to th
 
 * **Equilibrium Volatility:** $\sigma_{\text{eq}} = \sqrt{\frac{\text{Var}(\zeta)}{1 - b^2}}$
 
-#### Automated Trade Execution
+### Automated Trade Execution
 These calibrated parameters create a rigorous mathematical boundary for execution. We transform the raw spread into a dimensionless $s$-score:
 
 $$s_t = \frac{x_t - \theta}{\sigma_{\text{eq}}}$$
