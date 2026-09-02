@@ -84,6 +84,10 @@ $$s_t = \frac{x_t - \theta}{\sigma_{\text{eq}}}$$
 
 When the stochastic diffusion pushes the $s$-score significantly far from zero, the deterministic drift term $\kappa(\theta - x_t)dt$ mathematically overpowers the random noise. This triggers automated entry signals, betting on high-probability convergence back to the historical mean.
 
+* **Open Long Spread ($+1$):** $s_t < -s_{\text{open}}$ (Spread is oversold; buy asset, short factor basket).
+* **Open Short Spread ($-1$):** $s_t > +s_{\text{open}}$ (Spread is overbought; short asset, buy factor basket).
+* **Close Position ($0$):** $\vert{}s_t\vert{} \le s_{\text{close}}$ (Spread has reverted to equilibrium $\theta$).
+
 ### 4. Deep Learning Risk Overlay (TCN)
 Temporal Convolutional Network: A PyTorch architecture processing sequential 3D tensors (combining portfolio PnL, squared variance proxies, and macro factors) to forecast next-day Value at Risk (VaR).
 
@@ -103,10 +107,6 @@ Statistical Validation: The network's unconditional coverage is formally evaluat
 
 
 $$\text{LR}_{\text{POF}} = -2 \left[ x \ln(\alpha) + (N - x) \ln(1 - \alpha) - x \ln\left(\frac{x}{N}\right) - (N - x) \ln\left(1 - \frac{x}{N}\right) \right]$$
-
-* **Open Long Spread ($+1$):** $s_t < -s_{\text{open}}$ (Spread is oversold; buy asset, short factor basket).
-* **Open Short Spread ($-1$):** $s_t > +s_{\text{open}}$ (Spread is overbought; short asset, buy factor basket).
-* **Close Position ($0$):** $\vert{}s_t\vert{} \le s_{\text{close}}$ (Spread has reverted to equilibrium $\theta$).
 
 ---
 
