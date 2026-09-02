@@ -2,134 +2,163 @@ import numpy as np
 import pandas as pd
 
 
-def generate_trading_signals(
-    s_scores: pd.Series, s_open: float = 1.25, s_close: float = 0.5
-) -> pd.Series:
-    
-    """Generates discrete positions (-1 for short, 1 for long, 0 for flat)."""
-    
-    positions = pd.Series(0, index=s_scores.index, dtype=int)
-    current_pos = 0
+class PortfolioBacktester:
 
-    for i, s in enumerate(s_scores):
-        if np.isnan(s):
-            positions.iloc[i] = 0
-            continue
+    def __init__(
+        self,
+        s_open: float = 1.25,
+        s_close: float = 0.5,
+        transaction_cost_bps: float = 5.0,
+        max_gross_leverage: float = 1.0,
+    ):
+        """Initializes the Multi-Asset Statistical Arbitrage Backtester.
 
-        if current_pos == 0:
-            if s < -s_open:
-                current_pos = 1  # Buy undervalued spread
-            elif s > s_open:
-                current_pos = -1  # Short overextended spread
-        elif current_pos == 1:
-            if s >= -s_close:
-                current_pos = 0  # Close long
-        elif current_pos == -1:
-            if s <= s_close:
-                current_pos = 0  # Close short
+        :param s_open: S-score entry threshold.
+        :param s_close: S-score exit threshold.
+        :param transaction_cost_bps: Proportional cost per turnover in basis
+        points (e.g., 5.0 bps = 0.0005).
+        :param max_gross_leverage: Maximum sum of absolute portfolio weights
+        (|w_i|).
+        """
+        self.s_open = s_open
+        self.s_close = s_close
+        self.tc_rate = transaction_cost_bps / 10000.0
+        self.max_gross_leverage = max_gross_leverage
 
-        positions.iloc[i] = current_pos
+    def generate_signals(self, s_scores: pd.DataFrame) -> pd.DataFrame:
+        """Generates continuous discrete position signals (-1, 0, 1) across all assets."""
+        signals = pd.DataFrame(0, index=s_scores.index, columns=s_scores.columns)
 
-    return positions
+        for col in s_scores.columns:
+            series = s_scores[col].values
+            pos = np.zeros(len(series), dtype=int)
+            curr = 0
 
+            for t in range(len(series)):
+                s = series[t]
+                if np.isnan(s):
+                    pos[t] = 0
+                    continue
 
-def evaluate_strategy_pnl(
-    positions: pd.Series, daily_residuals: pd.Series
-) -> pd.DataFrame:
-    
-    """Calculates strategy returns, cumulative equity curve, and Sharpe ratio."""
-    
-    # Shift positions by 1 day to prevent lookahead bias
-    lagged_pos = positions.shift(1).fillna(0)
-    strategy_returns = lagged_pos * daily_residuals
+                if curr == 0:
+                    if s < -self.s_open:
+                        curr = 1  # Long undervalued spread
+                    elif s > self.s_open:
+                        curr = -1  # Short overbought spread
+                elif curr == 1:
+                    if s >= -self.s_close:
+                        curr = 0  # Reversion complete
+                elif curr == -1:
+                    if s <= self.s_close:
+                        curr = 0  # Reversion complete
 
-    cumulative_pnl = (1.0 + strategy_returns).cumprod()
+                pos[t] = curr
 
-    # Annualized Performance Metrics
-    ann_return = strategy_returns.mean() * 252
-    ann_vol = strategy_returns.std() * np.sqrt(252)
-    sharpe_ratio = ann_return / ann_vol if ann_vol != 0 else 0.0
+            signals[col] = pos
 
-    return pd.DataFrame(
-        {
-            "strategy_returns": strategy_returns,
-            "equity_curve": cumulative_pnl,
-            "sharpe_ratio": sharpe_ratio,
-        }
-    )
+        return signals
 
+    def compute_portfolio_weights(
+        self, signals: pd.DataFrame, sigma_eq_dict: dict[str, float]
+    ) -> pd.DataFrame:
+        """Weights positions by inverse equilibrium volatility (1 / sigma_eq)
 
-def apply_var_risk_overlay(
-    positions: pd.DataFrame,
-    var_forecasts: np.ndarray,
-    target_risk_limit: float = 0.02,
-    var_index_offset: int = 30,
-) -> pd.DataFrame:
-    
-    """Scales portfolio positions inversely to forecasted 5% VaR and halts
-
-    trading if 1% tail risk exceeds maximum allowable risk limits.
-
-    :param positions: Raw signal DataFrame (T x N)
-    :param var_forecasts: TCN output array (T - seq_len, 2) where col 0 = 1%
-    VaR, col 1 = 5% VaR
-    :param target_risk_limit: Maximum permissible 1% daily drawdown threshold
-    :param var_index_offset: Sequence length burn-in offset
-    """
-    
-    adjusted_positions = positions.copy()
-    valid_dates = positions.index[var_index_offset:]
-
-    for i, date in enumerate(valid_dates):
-        var_1pct = abs(var_forecasts[i, 0])
-        var_5pct = abs(var_forecasts[i, 1])
-
-        # 1. Circuit Breaker / Risk Halt: Flatten if tail risk breaches budget
-        if var_1pct > target_risk_limit:
-            adjusted_positions.loc[date] = 0.0
-            continue
-
-        # 2. Dynamic Volatility Scaling: Scale inversely by 5% VaR
-        scale_factor = (
-            min(1.5, target_risk_limit / var_5pct) if var_5pct > 1e-4 else 1.0
+        and normalizes row-wise to enforce gross leverage limits.
+        """
+        raw_weights = pd.DataFrame(
+            0.0, index=signals.index, columns=signals.columns
         )
-        adjusted_positions.loc[date] = positions.loc[date] * scale_factor
 
-    return adjusted_positions
+        # 1. Scale by 1 / sigma_eq
+        for col in signals.columns:
+            s_eq = sigma_eq_dict.get(col, np.nan)
+            if not np.isnan(s_eq) and s_eq > 0:
+                raw_weights[col] = signals[col] / s_eq
 
+        # 2. Row-wise normalization to respect gross leverage
+        gross_sum = raw_weights.abs().sum(axis=1)
+        gross_sum = gross_sum.replace(0.0, np.nan)
 
-def prepare_stat_arb_features(
-    positions: pd.DataFrame,
-    residuals: pd.DataFrame,
-    factor_returns: pd.DataFrame,
-    sigma_eq_dict: dict[str, float],
-) -> tuple[np.ndarray, np.ndarray]:
-    """Builds multi-channel feature tensors from multi-asset positions, Kalman residuals,
+        normalized_weights = raw_weights.div(gross_sum, axis=0) * min(
+            1.0, self.max_gross_leverage
+        )
+        return normalized_weights.fillna(0.0)
 
-    and systematic PCA factor returns.
-    """
-    # 1. Weight positions by inverse equilibrium volatility (1 / sigma_eq)
-    weights = pd.DataFrame(index=positions.index, columns=positions.columns)
-    for col in positions.columns:
-        s_eq = sigma_eq_dict.get(col, 1.0)
-        weights[col] = positions[col] / (s_eq if s_eq > 0 else 1.0)
+    def run_backtest(
+        self, weights: pd.DataFrame, daily_residuals: pd.DataFrame
+    ) -> pd.DataFrame:
+        """Executes portfolio backtest under T+1 causal execution,
 
-    # Normalize weights row-wise to prevent leverage explosion
-    sum_abs_weights = weights.abs().sum(axis=1).replace(0, 1.0)
-    norm_weights = weights.div(sum_abs_weights, axis=0)
+        deducting transaction costs from rebalancing turnover.
+        """
+        # Enforce causality: weights decided at t-1 execute on returns at t
+        lagged_weights = weights.shift(1).fillna(0.0)
 
-    # 2. Compute aggregate strategy return (lagged positions prevent lookahead)
-    lagged_weights = norm_weights.shift(1).fillna(0.0)
-    portfolio_returns = (lagged_weights * residuals).sum(axis=1)
+        # Gross portfolio return = sum(w_{i, t-1} * e_{i, t})
+        gross_returns = (lagged_weights * daily_residuals).sum(axis=1)
 
-    # 3. Multi-Channel Feature Matrix:
-    # [Portfolio Return, Squared Return Proxy, Factor Returns F_1 ... F_K]
-    feature_matrix = np.column_stack(
-        [
-            portfolio_returns.values,
-            (portfolio_returns**2).values,
-            factor_returns.values,
-        ]
-    )
+        # Turnover = sum(|w_{i, t} - w_{i, t-1}|)
+        turnover = weights.diff().abs().sum(axis=1).fillna(0.0)
+        transaction_costs = turnover * self.tc_rate
 
-    return feature_matrix, portfolio_returns.values
+        net_returns = gross_returns - transaction_costs
+
+        results = pd.DataFrame(
+            {
+                "gross_returns": gross_returns,
+                "transaction_costs": transaction_costs,
+                "net_returns": net_returns,
+                "turnover": turnover,
+                "gross_equity": (1.0 + gross_returns).cumprod(),
+                "net_equity": (1.0 + net_returns).cumprod(),
+            },
+            index=weights.index,
+        )
+
+        return results
+
+    @staticmethod
+    def calculate_metrics(returns: pd.Series, risk_free_rate: float = 0.0) -> dict:
+        """Calculates institutional risk and performance metrics."""
+        clean_ret = returns.dropna()
+        n_days = len(clean_ret)
+        if n_days < 2:
+            return {}
+
+        ann_factor = 252
+        cum_ret = (1.0 + clean_ret).cumprod()
+        total_return = cum_ret.iloc[-1] - 1.0
+        cagr = (cum_ret.iloc[-1]) ** (ann_factor / n_days) - 1.0
+
+        ann_mean = clean_ret.mean() * ann_factor
+        ann_vol = clean_ret.std() * np.sqrt(ann_factor)
+
+        excess_ret = clean_ret - (risk_free_rate / ann_factor)
+        sharpe = (
+            (excess_ret.mean() * ann_factor) / ann_vol if ann_vol > 0 else 0.0
+        )
+
+        downside_ret = clean_ret[clean_ret < 0]
+        downside_vol = downside_ret.std() * np.sqrt(ann_factor)
+        sortino = (
+            (excess_ret.mean() * ann_factor) / downside_vol
+            if downside_vol > 0
+            else 0.0
+        )
+
+        # Drawdowns
+        running_max = cum_ret.cummax()
+        drawdowns = (cum_ret - running_max) / running_max
+        max_drawdown = drawdowns.min()
+        calmar = cagr / abs(max_drawdown) if abs(max_drawdown) > 0 else 0.0
+
+        return {
+            "Total Return": total_return,
+            "CAGR": cagr,
+            "Annualized Volatility": ann_vol,
+            "Sharpe Ratio": sharpe,
+            "Sortino Ratio": sortino,
+            "Max Drawdown": max_drawdown,
+            "Calmar Ratio": calmar,
+            "Win Rate": (clean_ret > 0).mean(),
+        }
