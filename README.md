@@ -131,7 +131,6 @@ $$\text{LR}_{\text{POF}} = -2 \left[ x \ln(\alpha) + (N - x) \ln(1 - \alpha) - x
 
 ## Repository Structure
 
-```text
 ├── data/                                   # Local data cache (Gitignored except .gitkeep)
 │   └── .gitkeep
 ├── notebooks/                              # 4-Stage Execution Narrative
@@ -155,4 +154,4 @@ $$\text{LR}_{\text{POF}} = -2 \left[ x \ln(\alpha) + (N - x) \ln(1 - \alpha) - x
 
 ---
 
-### References
+# References
