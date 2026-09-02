@@ -1,29 +1,28 @@
 # Machine Learning-Enhanced PCA Statistical Arbitrage
 
-An institutional-grade quantitative trading engine implementing the statistical arbitrage framework formalized by Avellaneda & Lee (2010), augmented with unsupervised machine learning (i.e. PCA, DBSCAN, T), parametric UMAP for nonlinear dimensionality reduction, recursive Kalman Filter idiosyncratic residual extraction, continuous-time stochastic calibration, and TCN-trained VaR engine.
+An institutional-grade, market-neutral quantitative trading pipeline that extracts idiosyncratic equity spreads, models mean-reverting alpha, and manages tail risk using deep learning.
+
+The system modernizes the classic Avellaneda & Lee (2010) framework by replacing static regressions with dynamic Kalman Filters, introducing non-linear manifold clustering via Parametric UMAP and DBSCAN, and applying a causal Temporal Convolutional Network (TCN) to dynamically control tail-risk exposure.
 
 ---
 
-## Theoretical Framework & Architecture
+## 1. Strategy Pipeline Architecture
 
-The quantitative pipeline operates sequentially across four core mathematical domains:
+*  1. The quantitative pipeline operates sequentially across four core mathematical domains:
 
-### 1. Market Modeling & Dimensionality Reduction
-*   **PCA Factor Extraction:** Compresses the multi-asset variance of a highly correlated equities universe into orthogonal systematic risk factors (eigenvectors) via eigendecomposition.
-*   **Parametric UMAP & DBSCAN Clustering:** Projects linear PCA factor loadings into a dense, non-linear latent manifold using a neural network encoder (Parametric UMAP). DBSCAN dynamically isolates highly cohesive, cointegrated asset clusters based on spatial proximity while filtering out erratic assets as noise.
+*  2. Market Factor Decomposition: Extracts the dominant systematic risk factors driving a broad universe of equities, separating broad macroeconomic trends from individual stock behavior.
 
-### 2. Dynamic Residual Extraction
-*   **Multi-Factor Kalman Filter:** Replaces traditional Ordinary Least Squares (OLS) regression to prevent stale hedge ratios. The State-Space Model continuously updates unobserved factor betas ($\beta_t = \beta_{t-1} + w_t$) as new daily observations arrive ($y_t = \beta_t x_t + v_t$).
-*   **Pure Idiosyncratic Spreads:** The innovation error ($v_t$) of the Kalman Filter isolates the pure, adaptive idiosyncratic residual spread of each asset, cleanly stripped of broad market influence.
+Non-Linear Dimensionality Reduction & Clustering: Compresses factor exposures into a dense geometric space using Parametric UMAP, allowing DBSCAN to isolate cohesive asset cohorts and discard uncorrelated noise.
 
-### 3. Mean-Reversion & Signal Generation
-*   **Stationarity Diagnostics:** Automated gatekeeping utilizes the Augmented Dickey-Fuller (ADF) test ($p < 0.05$) and lag-1 autocorrelation checks to mathematically prove spread stationarity before capital deployment.
-*   **Continuous-Time SDE Calibration:** Models validated spreads using the Ornstein-Uhlenbeck (OU) process ($dx_t = \kappa(\theta - x_t)dt + \sigma dW_t$) to extract the mean-reversion speed ($\kappa$) and generate standardized $s$-scores for automated execution thresholds.
+Adaptive Residual Tracking: Continuously tracks time-varying asset betas using a recursive Kalman Filter state-space model, extracting clean asset-specific mispricings (innovations) without stale lookback bias.
 
-### 4. Deep Learning Risk Overlay (TCN)
-*   **Temporal Convolutional Network:** A PyTorch architecture utilizing 1D causal dilated convolutions processes sequential 3D tensors (combining portfolio PnL, squared variance proxies, and macro factors) to forecast next-day Value at Risk (VaR).
-*   **Multi-Quantile Pinball Loss:** Optimizes directly for the 1% and 5% left-tail risk percentiles.
-*   **Statistical Validation:** The network's unconditional coverage is formally evaluated against an EGARCH baseline using the Kupiec Proportion of Failures (POF) Likelihood Ratio test.
+Statistical Diagnostic Gatekeeper: Filters spreads through the Augmented Dickey-Fuller (ADF) test and autocorrelation screening to reject non-stationary random walks before capital is allocated.
+
+Mean-Reversion Signal Engine: Models stationary spreads as continuous-time mean-reverting processes, converting spread deviations into normalized scores for automated entry and exit triggers.
+
+Portfolio Execution & Frictions: Allocates capital using inverse-volatility risk parity across active clusters, accounting for realistic slippage and transaction costs.
+
+Deep Learning Risk Overlay: Ingests rolling sequence windows into a causal dilated TCN to forecast next-day 1% and 5% Value at Risk (VaR), dynamically scaling down leverage or halting trades ahead of volatility spikes.
 
 ---
 
