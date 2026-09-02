@@ -6,25 +6,25 @@ The system modernizes the classic Avellaneda & Lee (2010) framework by replacing
 
 ---
 
-## 1. Strategy Pipeline Architecture
+## Strategy Pipeline Architecture
 
 *  **1. Market Factor Decomposition:** Extracts the dominant systematic risk factors driving a broad universe of equities, separating broad macroeconomic trends from individual stock behavior.
 
-Non-Linear Dimensionality Reduction & Clustering: Compresses factor exposures into a dense geometric space using Parametric UMAP, allowing DBSCAN to isolate cohesive asset cohorts and discard uncorrelated noise.
+*  **2. Non-Linear Dimensionality Reduction & Clustering:** Compresses factor exposures into a dense geometric space using Parametric UMAP, allowing DBSCAN to isolate cohesive asset cohorts and discard uncorrelated noise.
 
-Adaptive Residual Tracking: Continuously tracks time-varying asset betas using a recursive Kalman Filter state-space model, extracting clean asset-specific mispricings (innovations) without stale lookback bias.
+*  **3. Adaptive Residual Tracking:** Continuously tracks time-varying asset betas using a recursive Kalman Filter state-space model, extracting clean asset-specific mispricings (innovations) without stale lookback bias.
 
-Statistical Diagnostic Gatekeeper: Filters spreads through the Augmented Dickey-Fuller (ADF) test and autocorrelation screening to reject non-stationary random walks before capital is allocated.
+*  **4. Statistical Diagnostic Gatekeeper:** Filters spreads through the Augmented Dickey-Fuller (ADF) test and autocorrelation screening to reject non-stationary random walks before capital is allocated.
 
-Mean-Reversion Signal Engine: Models stationary spreads as continuous-time mean-reverting processes, converting spread deviations into normalized scores for automated entry and exit triggers.
+*  **5. Mean-Reversion Signal Engine:** Models stationary spreads as continuous-time mean-reverting processes, converting spread deviations into normalized scores for automated entry and exit triggers.
 
-Portfolio Execution & Frictions: Allocates capital using inverse-volatility risk parity across active clusters, accounting for realistic slippage and transaction costs.
+*  **6. Portfolio Execution & Frictions:** Allocates capital using inverse-volatility risk parity across active clusters, accounting for realistic slippage and transaction costs.
 
-Deep Learning Risk Overlay: Ingests rolling sequence windows into a causal dilated TCN to forecast next-day 1% and 5% Value at Risk (VaR), dynamically scaling down leverage or halting trades ahead of volatility spikes.
+*  **7. Deep Learning Risk Overlay:** Ingests rolling sequence windows into a causal dilated TCN to forecast next-day 1% and 5% Value at Risk (VaR), dynamically scaling down leverage or halting trades ahead of volatility spikes.
 
 ---
 
-## 2. Theoretical Framework & Architecture
+## Theoretical Framework & Architecture
 
 ### 1. Market Modeling & Dimensionality Reduction
 PCA Factor Extraction: Compresses the multi-asset variance of a highly correlated equities universe into orthogonal systematic risk factors (eigenvectors) via eigendecomposition. The data matrix $X$ is standardized, and the sample covariance matrix $\Sigma$ is computed to map asset relationships:
