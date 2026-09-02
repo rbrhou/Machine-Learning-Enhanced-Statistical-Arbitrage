@@ -4,24 +4,34 @@ An institutional-grade quantitative trading engine implementing the statistical 
 
 ---
 
-## 1. Overview & Theoretical Framework
+## Theoretical Framework & Architecture
 
-Traditional statistical arbitrage often relies on static 1-to-1 pairs trading. This project implements a multi-asset systematic framework that trades an individual equity against a dynamic basket of systematic eigenfactors:
+The quantitative pipeline operates sequentially across four core mathematical domains:
 
-* **Dimensionality Reduction:** Compresses thousands of correlated returns into a small set of orthogonal systematic risk drivers using Principal Component Analysis (PCA).
-* **Dynamic Asset Clustering:** Applies DBSCAN clustering directly to PCA factor loadings to identify cohesive asset cohorts sharing identical factor sensitivities without relying on fundamental sector classifications.
-* **Systematic Risk Hedging:** Isolates purely idiosyncratic, stock-specific residual spreads by regressing asset returns against the top PCA factor returns.
-* **Statistical Diagnostics:** Enforces stationarity via Augmented Dickey-Fuller (ADF) unit-root tests and screens for negative 1st-order autocorrelation to verify mean-reverting behavior before deploying capital.
-* **Continuous-Time SDE Calibration:** Models idiosyncratic residual spreads using the Ornstein-Uhlenbeck (OU) process, discretized via an $\text{AR}(1)$ framework to estimate mean-reversion speeds, equilibrium targets, and dimensionless $s$-score trade signals.
+### 1. Market Modeling & Dimensionality Reduction
+*   **PCA Factor Extraction:** Compresses the multi-asset variance of a highly correlated equities universe into orthogonal systematic risk factors (eigenvectors) via eigendecomposition.
+*   **Parametric UMAP & DBSCAN Clustering:** Projects linear PCA factor loadings into a dense, non-linear latent manifold using a neural network encoder (Parametric UMAP)[cite: 1]. DBSCAN dynamically isolates highly cohesive, cointegrated asset clusters based on spatial proximity while filtering out erratic assets as noise[cite: 1].
+
+### 2. Dynamic Residual Extraction
+*   **Multi-Factor Kalman Filter:** Replaces traditional Ordinary Least Squares (OLS) regression to prevent stale hedge ratios[cite: 1]. The State-Space Model continuously updates unobserved factor betas ($\beta_t = \beta_{t-1} + w_t$) as new daily observations arrive ($y_t = \beta_t x_t + v_t$)[cite: 1].
+*   **Pure Idiosyncratic Spreads:** The innovation error ($v_t$) of the Kalman Filter isolates the pure, adaptive idiosyncratic residual spread of each asset, cleanly stripped of broad market influence[cite: 1].
+
+### 3. Mean-Reversion & Signal Generation
+*   **Stationarity Diagnostics:** Automated gatekeeping utilizes the Augmented Dickey-Fuller (ADF) test ($p < 0.05$) and lag-1 autocorrelation checks to mathematically prove spread stationarity before capital deployment[cite: 1].
+*   **Continuous-Time SDE Calibration:** Models validated spreads using the Ornstein-Uhlenbeck (OU) process ($dx_t = \kappa(\theta - x_t)dt + \sigma dW_t$) to extract the mean-reversion speed ($\kappa$) and generate standardized $s$-scores for automated execution thresholds[cite: 1].
+
+### 4. Deep Learning Risk Overlay (TCN)
+*   **Temporal Convolutional Network:** A PyTorch architecture utilizing 1D causal dilated convolutions processes sequential 3D tensors (combining portfolio PnL, squared variance proxies, and macro factors) to forecast next-day Value at Risk (VaR)[cite: 1].
+*   **Multi-Quantile Pinball Loss:** Optimizes directly for the 1% and 5% left-tail risk percentiles[cite: 1].
+*   **Statistical Validation:** The network's unconditional coverage is formally evaluated against an EGARCH baseline using the Kupiec Proportion of Failures (POF) Likelihood Ratio test[cite: 1].
 
 ---
 
-## 2. Mathematical Architecture
+## 2. Theoretical Framework & Architecture
 
-### Phase 1: Covariance Mapping & Eigendecomposition
-For a standardized, mean-centered return matrix $X \in \mathbb{R}^{T \times N}$, the sample covariance matrix $\Sigma$ is computed as:
-$$\Sigma = \frac{1}{T - 1} X^T X$$
-
+### 1. Market Modeling & Dimensionality Reduction
+*   **PCA Factor Extraction:** Compresses the multi-asset variance of a highly correlated equities universe into orthogonal systematic risk factors (eigenvectors) via eigendecomposition. The data matrix $X$ is standardized, and the sample covariance matrix $\Sigma$ is computed to map asset relationships:
+$$\Sigma = \frac{1}{n-1} X^T X$$
 
 Solving the eigenvalue problem extracts systematic factor loadings ($v_i$) and eigenvalues ($\lambda_i$):
 $$\Sigma v_i = \lambda_i v_i$$
@@ -66,25 +76,26 @@ $$s_t = \frac{x_t - \theta}{\sigma_{\text{eq}}}$$
 
 ---
 
-## 3. Project Structure
+## Repository Structure
 
 ```text
-quant-pca-stat-arb/
-├── data/                  # Local parquet/csv data cache (gitignored)
+├── data/                                   # Local data cache (Gitignored except .gitkeep)
 │   └── .gitkeep
-├── notebooks/             # Exploratory research & interactive backtests
-│   └── 01_factor_decomposition.ipynb
-├── src/                   # Production source code
-│   ├── __init__.py
-│   ├── backtest.py        # Signal generation & vectorized PnL evaluation
-│   ├── clustering.py      # Dynamic DBSCAN clustering on PCA loadings
-│   ├── data_loader.py     # yfinance data ingestion and parquet caching
-│   ├── diagnostics.py     # ADF stationarity & autocorrelation checks
-│   ├── ou_process.py      # Continuous OU calibration & s-score computation
-│   ├── pca_model.py       # Covariance computation & eigendecomposition
-│   └── residuals.py       # OLS residual extraction & cumulative spreads
-├── tests/                 # Unit tests for numerical stability
+├── notebooks/                              # 4-Stage Execution Narrative
+│   ├── 01_factor_decomposition.ipynb       # PCA, Parametric UMAP, and DBSCAN Clustering
+│   ├── 02_kf_residuals_verification.ipynb  # Kalman Filter tracking vs OLS + OU Calibration
+│   ├── 03_portfolio_backtest.ipynb         # Multi-Asset Execution & Transaction Cost Friction
+│   └── 04_tcn_var_risk_overlay.ipynb       # PyTorch TCN VaR Forecasting & Kupiec POF Testing
+├── src/                                    # Core Modular Engine
+│   ├── backtest.py                         # Portfolio aggregation, inverse-vol weighting, and tearsheets
+│   ├── clustering.py                       # Parametric UMAP + DBSCAN density clustering
+│   ├── data_loader.py                      # Local Parquet caching and yfinance ingestion
+│   ├── diagnostics.py                      # ADF stationarity and autocorrelation screening
+│   ├── ou_process.py                       # Ornstein-Uhlenbeck SDE modeling and s-score generation
+│   ├── pca_model.py                        # Eigendecomposition and variance mapping
+│   ├── residuals.py                        # Multi-Factor Kalman Filter State-Space model
+│   └── tcn_var.py                          # PyTorch TCN architecture and Pinball Loss
+├── tests/                                  # Pytest unit testing suite
 │   └── test_engine.py
-├── .gitignore             # Git exclusion rules for large datasets/caches
-├── README.md              # Project documentation
-└── requirements.txt       # Environment dependencies
+├── .gitignore                              # Excludes data/, .pt weights, and Jupyter checkpoints
+└── requirements.txt                        # Python dependencies
