@@ -58,15 +58,16 @@ $$y_t = \beta_t x_t + v_t$$
 Pure Idiosyncratic Spreads: The innovation error ($v_t$) of the Kalman Filter isolates the pure, adaptive idiosyncratic residual spread of each asset, cleanly stripped of broad market influence.
 
 ### 3. Mean-Reversion & Signal Generation
-Once the systematic PCA factors are hedged out, the remaining idiosyncratic residual spread is modeled using the Ornstein-Uhlenbeck (OU) process[cite: 1]. This stochastic differential equation (SDE) is governed by two competing forces: a deterministic "drift" that pulls the asset back to its historical mean, and a stochastic "diffusion" representing random market noise[cite: 1, 3].
+Once the systematic PCA factors are hedged out, the remaining idiosyncratic residual spread is modeled using the Ornstein-Uhlenbeck (OU) process. This stochastic differential equation (SDE) is governed by two competing forces: a deterministic "drift" that pulls the asset back to its historical mean, and a stochastic "diffusion" representing random market noise[cite: 1, 3].
 
-The continuous-time SDE is defined as[cite: 4]:
+The continuous-time SDE is defined as:
+
 $$dx_t = \kappa(\theta - x_t)dt + \sigma dW_t$$
 
 Where:
-* **$\theta$ (Long-Term Equilibrium Mean):** The historical gravitational center of the trade[cite: 1]. Because we are trading hedged residuals derived from zero-mean Kalman innovations, $\theta$ typically centers around zero[cite: 1].
-* **$\kappa$ (Mean Reversion Speed):** The deterministic pull or "rubber band" effect[cite: 1]. A high $\kappa$ indicates the spread violently snaps back to $\theta$, while a low $\kappa$ indicates sluggish convergence[cite: 1].
-* **$\sigma dW_t$ (Stochastic Diffusion):** The unpredictable market noise that continuously perturbs the spread away from equilibrium[cite: 1].
+* **$\theta$ (Long-Term Equilibrium Mean):** The historical gravitational center of the trade. Because we are trading hedged residuals derived from zero-mean Kalman innovations, $\theta$ typically centers around zero.
+* **$\kappa$ (Mean Reversion Speed):** The deterministic pull or "rubber band" effect. A high $\kappa$ indicates the spread violently snaps back to $\theta$, while a low $\kappa$ indicates sluggish convergence.
+* **$\sigma dW_t$ (Stochastic Diffusion):** The unpredictable market noise that continuously perturbs the spread away from equilibrium.
 
 #### Discrete-Time AR(1) Calibration
 Because our market data is sampled at discrete daily intervals ($\Delta t = 1/252$) rather than continuously, the SDE is mathematically mapped to an exact Autoregressive AR(1) process for calibration:
@@ -78,10 +79,11 @@ By fitting the cumulative daily residuals via Ordinary Least Squares (OLS) to th
 * **Equilibrium Volatility:** $\sigma_{\text{eq}} = \sqrt{\frac{\text{Var}(\zeta)}{1 - b^2}}$
 
 #### Automated Trade Execution
-These calibrated parameters create a rigorous mathematical boundary for execution[cite: 1]. We transform the raw spread into a dimensionless $s$-score:
+These calibrated parameters create a rigorous mathematical boundary for execution. We transform the raw spread into a dimensionless $s$-score:
+
 $$s_t = \frac{x_t - \theta}{\sigma_{\text{eq}}}$$
 
-When the stochastic diffusion pushes the $s$-score significantly far from zero, the deterministic drift term $\kappa(\theta - x_t)dt$ mathematically overpowers the random noise[cite: 1]. This triggers automated entry signals, betting on high-probability convergence back to the historical mean[cite: 1].
+When the stochastic diffusion pushes the $s$-score significantly far from zero, the deterministic drift term $\kappa(\theta - x_t)dt$ mathematically overpowers the random noise. This triggers automated entry signals, betting on high-probability convergence back to the historical mean.
 
 ### 4. Deep Learning Risk Overlay (TCN)
 Temporal Convolutional Network: A PyTorch architecture processing sequential 3D tensors (combining portfolio PnL, squared variance proxies, and macro factors) to forecast next-day Value at Risk (VaR).
