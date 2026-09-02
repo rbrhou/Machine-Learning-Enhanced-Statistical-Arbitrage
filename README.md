@@ -104,7 +104,7 @@ Capital is allocated across active cluster members using inverse equilibrium vol
 
 $$w_{i, t} \propto \frac{\text{Signal}_{i, t}}{\sigma_{\text{eq}, i}}$$
 
-Portfolio weights are normalized row-wise to enforce target gross leverage limits ($\sum |w_{i,t}| \le L_{\text{max}}$)[cite: 1]. This ensures quieter spreads receive proportionally larger capital allocations while volatile spreads are scaled down, equalizing tail-risk contributions across the strategy
+Portfolio weights are normalized row-wise to enforce target gross leverage limits ($\sum |w_{i,t}| \le L_{\text{max}}$). This ensures quieter spreads receive proportionally larger capital allocations while volatile spreads are scaled down, equalizing tail-risk contributions across the strategy.
 
 
 ### 4. Deep Learning Risk Overlay (TCN)
@@ -152,3 +152,7 @@ $$\text{LR}_{\text{POF}} = -2 \left[ x \ln(\alpha) + (N - x) \ln(1 - \alpha) - x
 │   └── test_engine.py
 ├── .gitignore                              # Excludes data/, .pt weights, and Jupyter checkpoints
 └── requirements.txt                        # Python dependencies
+
+---
+
+### References
