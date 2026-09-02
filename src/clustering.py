@@ -18,6 +18,7 @@ class FactorClusterer:
         n_epochs: int = 200,
         random_state: int = 42,
     ):
+        
         """Initializes Parametric UMAP non-linear manifold reduction coupled with DBSCAN.
 
         :param n_components: Target latent space dimensions (2 or 3 for
@@ -35,6 +36,7 @@ class FactorClusterer:
         :param n_epochs: Number of training epochs for the Parametric UMAP
         neural network.
         """
+        
         self.n_components = n_components
         self.eps = eps
         self.min_samples = min_samples
@@ -58,7 +60,9 @@ class FactorClusterer:
         self.umap_embeddings_ = None
 
     def fit(self, factor_loadings: pd.DataFrame) -> "FactorClusterer":
+        
         """Fits Parametric UMAP on PCA factor loadings and clusters assets via DBSCAN."""
+        
         # 1. Standardize factor loadings
         norm_loadings = self.scaler.fit_transform(factor_loadings.values)
 
@@ -82,15 +86,19 @@ class FactorClusterer:
         return self
 
     def transform(self, new_factor_loadings: pd.DataFrame) -> np.ndarray:
+        
         """Projects out-of-sample or rolling-window factor loadings into the learned
 
         latent space using the trained neural encoder.
         """
+        
         norm_new = self.scaler.transform(new_factor_loadings.values)
         return self.umap_reducer.transform(norm_new)
 
     def get_clusters(self) -> dict[int, list[str]]:
+        
         """Returns dictionary of cluster assignments, where -1 denotes unclustered noise."""
+        
         if self.clustered_assets_ is None:
             raise ValueError(
                 "Model has not been fitted. Call fit(factor_loadings) first."
@@ -102,5 +110,5 @@ class FactorClusterer:
                 self.clustered_assets_["cluster"] == cluster_id
             ].index.tolist()
             clusters[cluster_id] = tickers
-
+        
         return clusters
