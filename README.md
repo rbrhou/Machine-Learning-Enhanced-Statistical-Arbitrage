@@ -12,17 +12,17 @@ The system modernizes the classic Avellaneda & Lee (2010) framework by replacing
 
 *  2. Market Factor Decomposition: Extracts the dominant systematic risk factors driving a broad universe of equities, separating broad macroeconomic trends from individual stock behavior.
 
-Non-Linear Dimensionality Reduction & Clustering: Compresses factor exposures into a dense geometric space using Parametric UMAP, allowing DBSCAN to isolate cohesive asset cohorts and discard uncorrelated noise.
+*  3. Non-Linear Dimensionality Reduction & Clustering: Compresses factor exposures into a dense geometric space using Parametric UMAP, allowing DBSCAN to isolate cohesive asset cohorts and discard uncorrelated noise.
 
-Adaptive Residual Tracking: Continuously tracks time-varying asset betas using a recursive Kalman Filter state-space model, extracting clean asset-specific mispricings (innovations) without stale lookback bias.
+*  4. Adaptive Residual Tracking: Continuously tracks time-varying asset betas using a recursive Kalman Filter state-space model, extracting clean asset-specific mispricings (innovations) without stale lookback bias.
 
-Statistical Diagnostic Gatekeeper: Filters spreads through the Augmented Dickey-Fuller (ADF) test and autocorrelation screening to reject non-stationary random walks before capital is allocated.
+*  5. Statistical Diagnostic Gatekeeper: Filters spreads through the Augmented Dickey-Fuller (ADF) test and autocorrelation screening to reject non-stationary random walks before capital is allocated.
 
-Mean-Reversion Signal Engine: Models stationary spreads as continuous-time mean-reverting processes, converting spread deviations into normalized scores for automated entry and exit triggers.
+*  6. Mean-Reversion Signal Engine: Models stationary spreads as continuous-time mean-reverting processes, converting spread deviations into normalized scores for automated entry and exit triggers.
 
-Portfolio Execution & Frictions: Allocates capital using inverse-volatility risk parity across active clusters, accounting for realistic slippage and transaction costs.
+*  7. Portfolio Execution & Frictions: Allocates capital using inverse-volatility risk parity across active clusters, accounting for realistic slippage and transaction costs.
 
-Deep Learning Risk Overlay: Ingests rolling sequence windows into a causal dilated TCN to forecast next-day 1% and 5% Value at Risk (VaR), dynamically scaling down leverage or halting trades ahead of volatility spikes.
+*  8. Deep Learning Risk Overlay: Ingests rolling sequence windows into a causal dilated TCN to forecast next-day 1% and 5% Value at Risk (VaR), dynamically scaling down leverage or halting trades ahead of volatility spikes.
 
 ---
 
