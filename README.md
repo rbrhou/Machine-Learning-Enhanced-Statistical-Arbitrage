@@ -55,7 +55,14 @@ $$y_t = \beta_t x_t + v_t$$
 Pure Idiosyncratic Spreads: The innovation error ($v_t$) of the Kalman Filter isolates the pure, adaptive idiosyncratic residual spread of each asset, cleanly stripped of broad market influence.
 
 ### 3. Mean-Reversion & Signal Generation
-Once the systematic PCA factors are hedged out, the remaining idiosyncratic residual spread is modeled using the Ornstein-Uhlenbeck (OU) process. This stochastic differential equation (SDE) is governed by two competing forces: a deterministic "drift" that pulls the asset back to its historical mean, and a stochastic "diffusion" representing random market noise[cite: 1, 3].
+Before spread modeling, the cumulative idiosyncratic residuals extracted from the Kalman Filter undergo two automated validation filters to prune non-convergent assets:
+
+* **Augmented Dickey-Fuller (ADF) Test:** Tests the null hypothesis ($H_0$) that the spread contains a unit root. Spreads must achieve $p < 0.05$ to reject non-stationarity and confirm mean-reverting bounds.
+* **Lag-1 Autocorrelation Screening:** Calculates the first-order serial correlation $\rho_1 = \frac{\text{Cov}(e_t, e_{t-1})}{\text{Var}(e_t)}$. The spread must exhibit negative autocorrelation ($\rho_1 < 0$) to verify that daily shocks experience a mean-reverting pull rather than trending momentum.
+
+Spreads failing either criterion are discarded before parameter estimation, preventing the model from fitting invalid parameters to random walks[cite: 1].
+
+Once the systematic PCA factors are hedged out, the remaining idiosyncratic residual spread is modeled using the Ornstein-Uhlenbeck (OU) process. This stochastic differential equation (SDE) is governed by two competing forces: a deterministic "drift" that pulls the asset back to its historical mean, and a stochastic "diffusion" representing random market noise.
 
 The continuous-time SDE is defined as:
 
@@ -68,6 +75,7 @@ Where:
 
 ### Discrete-Time AR(1) Calibration
 Because our market data is sampled at discrete daily intervals ($\Delta t = 1/252$) rather than continuously, the SDE is mathematically mapped to an exact Autoregressive AR(1) process for calibration:
+
 $$x_n = a + b x_{n-1} + \zeta_n$$
 
 By fitting the cumulative daily residuals via Ordinary Least Squares (OLS) to this AR(1) structure, we extract the continuous-time parameters:
@@ -87,10 +95,6 @@ When the stochastic diffusion pushes the $s$-score significantly far from zero, 
 * **Open Long Spread ($+1$):** $s_t < -s_{\text{open}}$ (Spread is oversold; buy asset, short factor basket).
 * **Open Short Spread ($-1$):** $s_t > +s_{\text{open}}$ (Spread is overbought; short asset, buy factor basket).
 * **Close Position ($0$):** $\vert{}s_t\vert{} \le s_{\text{close}}$ (Spread has reverted to equilibrium $\theta$).
-| **Undervalued Spread** | $s_t < -s_{\text{open}}$ (e.g., $-1.25$) | **Long Spread** ($+1$) | Deterministic drift overpowers random noise[cite: 1] |
-| **Overvalued Spread** | $s_t > +s_{\text{open}}$ (e.g., $+1.25$) | **Short Spread** ($-1$) | High-probability expectation of reversion down[cite: 1] |
-| **Reversion Target** | $|s_t| \le s_{\text{close}}$ (e.g., $0.50$) | **Flat / Exit** ($0$) | Mispricing absorbed; position closed out[cite: 1] |
-
 
 ### 4. Deep Learning Risk Overlay (TCN)
 Temporal Convolutional Network: A PyTorch architecture processing sequential 3D tensors (combining portfolio PnL, squared variance proxies, and macro factors) to forecast next-day Value at Risk (VaR).
