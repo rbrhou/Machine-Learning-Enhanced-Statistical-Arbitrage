@@ -157,30 +157,21 @@ $$\text{LR}_{\text{POF}} = -2 \left[ x \ln(\alpha) + (N - x) \ln(1 - \alpha) - x
 
 ---
 ## References 
-### 1. Foundational Statistical Arbitrage & Multi-Factor Modeling
 * **Avellaneda, M., & Lee, J.-H. (2010).** *Statistical arbitrage in the US equities market.* **Quantitative Finance**.
   * *Project Role:* Provides the core mathematical framework for PCA factor decomposition, idiosyncratic residual extraction, and Ornstein-Uhlenbeck (OU) mean-reversion modeling.
-
-### 2. Topological Manifold Learning & Dynamic Clustering
 * **McInnes, L., Healy, J., & Melville, J. (2018).** *UMAP: Uniform Manifold Approximation and Projection for Dimension Reduction.* **arXiv:1802.03426**.
   * *Project Role:* Introduces the fuzzy simplicial set theory and cross-entropy loss function used to preserve local and global non-linear geometry in high-dimensional feature spaces.
 * **Sainburg, T., McInnes, L., & Gentner, T. Q. (2021).** *Parametric UMAP: learning embeddings with deep neural networks for representation and semi-supervised learning.* **Neural Computation**, (arXiv:2009.12981, 2020).
   * *Project Role:* Replaces transductive coordinate optimization with a trainable neural network encoder, allowing the pipeline to project out-of-sample factor loadings without re-optimizing the whole graph.
 * **Ester, M., Kriegel, H.-P., Sander, J., & Xu, X. (1996).** *A density-based algorithm for discovering clusters in large spatial databases with noise.* **Proceedings of the Second International Conference on Knowledge Discovery and Data Mining (KDD-96)**, 226–231.
   * *Project Role:* Core density-based clustering algorithm (DBSCAN) that segments UMAP latent coordinates into cohesive asset cohorts while routing outliers to the noise label (-1).
-
-### 3. Econometric Tail Risk Diagnostics & Backtesting
 * **Kupiec, P. H. (1995).** *Techniques for verifying the accuracy of risk measurement models.* **The Journal of Derivatives**, 3(2), 73–84.
   * *Project Role:* The Proportion of Failures (POF) likelihood ratio test ($\text{LR}_{\text{POF}}$) used to statistically evaluate the unconditional coverage of the TCN's 1% and 5% VaR forecasts.
 * **Koenker, R., & Bassett, G. (1978).** *Regression quantiles.* **Econometrica**, 46(1), 33–50.
   * *Project Role:* Theoretical formulation of the asymmetric Pinball (Quantile) loss function used to optimize the TCN directly on target percentiles rather than the conditional mean.
-
-### 4. Sequence Modeling & Deep Learning Risk Engine
 * **Bai, S., Kolter, J. Z., & Koltun, V. (2018).** *An empirical evaluation of generic convolutional and recurrent networks for sequence modeling.* **arXiv:1803.01271**.
   * *Project Role:* The foundational architecture for modern time-series TCNs, establishing causal dilated convolutions, residual blocks, and receptive-field sizing for sequence data without lookahead bias.
 * **Lea, C., Flynn, M. D., Vidal, R., Reiter, A., & Hager, G. D. (2017).** *Temporal convolutional networks for action segmentation and detection.* **IEEE CVPR**, 156–165 (arXiv:1611.05267, 2016).
   * *Project Role:* The original 2016/2017 formulation of hierarchical causal convolutions and temporal receptive fields for streaming sequential signals.
-
-### 5. Dynamic State-Space Modeling
 * **Montana, G., Triantafyllopoulos, K., & Tsagaris, T. (2024).** *Dynamic modeling of mean-reverting for statistical arbitrage* **Statistical Finance**, (arXiv:0808.1710, 2009)
   * *Project Role:* Theoretical justification for replacing static OLS regressions with recursive Kalman Filter state-space updates to track drifting systematic factor exposures ($\beta_t$).
