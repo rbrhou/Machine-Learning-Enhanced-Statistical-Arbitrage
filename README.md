@@ -72,7 +72,9 @@ $$x_n = a + b x_{n-1} + \zeta_n$$
 
 By fitting the cumulative daily residuals via Ordinary Least Squares (OLS) to this AR(1) structure, we extract the continuous-time parameters:
 * **Mean-Reversion Speed:** $\kappa = -\frac{\ln(b)}{\Delta t}$
+
 * **Equilibrium Mean:** $\theta = \frac{a}{1 - b}$
+
 * **Equilibrium Volatility:** $\sigma_{\text{eq}} = \sqrt{\frac{\text{Var}(\zeta)}{1 - b^2}}$
 
 #### Automated Trade Execution
