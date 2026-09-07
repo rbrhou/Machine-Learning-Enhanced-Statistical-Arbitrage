@@ -1,8 +1,6 @@
 # Machine Learning-Enhanced PCA Statistical Arbitrage
 
-An institutional-grade, market-neutral quantitative trading pipeline that extracts idiosyncratic equity spreads, models mean-reverting alpha, and manages tail risk using deep learning.
-
-The system modernizes the classic Avellaneda & Lee (2010) framework by replacing static regressions with dynamic Kalman Filters, introducing non-linear manifold clustering via Parametric UMAP and DBSCAN, and applying a causal Temporal Convolutional Network (TCN) to dynamically control tail-risk exposure.
+This system modernizes the classic Avellaneda & Lee (2010) framework by replacing static regressions with dynamic Kalman Filters, introducing non-linear manifold clustering via Parametric UMAP and DBSCAN, and applying a causal Temporal Convolutional Network (TCN) to dynamically control tail-risk exposure.
 
 ---
 
