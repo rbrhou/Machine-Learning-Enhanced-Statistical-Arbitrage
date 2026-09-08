@@ -6,19 +6,7 @@ This system modernizes the classic Avellaneda & Lee (2010) framework by replacin
 
 ## Strategy Pipeline Architecture
 
-   **1. Market Factor Decomposition:** Extracts the dominant systematic risk factors driving a broad universe of equities, separating broad macroeconomic trends from individual stock behavior.
-
-   **2. Non-Linear Dimensionality Reduction & Clustering:** Compresses factor exposures into a dense geometric space using Parametric UMAP, allowing DBSCAN to isolate cohesive asset cohorts and discard uncorrelated noise.
-
-   **3. Adaptive Residual Tracking:** Continuously tracks time-varying asset betas using a recursive Kalman Filter state-space model, extracting clean asset-specific mispricings (innovations) without stale lookback bias.
-
-   **4. Statistical Diagnostic Gatekeeper:** Filters spreads through the Augmented Dickey-Fuller (ADF) test and autocorrelation screening to reject non-stationary random walks before capital is allocated.
-
-   **5. Mean-Reversion Signal Engine:** Models stationary spreads as continuous-time mean-reverting processes, converting spread deviations into normalized scores for automated entry and exit triggers.
-
-   **6. Portfolio Execution & Frictions:** Allocates capital using inverse-volatility risk parity across active clusters, accounting for realistic slippage and transaction costs.
-
-   **7. Deep Learning Risk Overlay:** Ingests rolling sequence windows into a causal dilated TCN to forecast next-day 1% and 5% Value at Risk (VaR), dynamically scaling down leverage or halting trades ahead of volatility spikes.
+Arbitrage pricing theory framework dictates that the return of an asset is driven by an arbitrary number of macroeconomics factors, and the idiosyncratic error is a martingale difference sequence. The core objective of this project is to exploit the arbitrage opportunities from these mispricing anomalies. We extract the systematic risk factors by PCA decomposition, in potentially high dimensional PCA space. So, we performed a parametric UMAP algorithm to compress the factor exposures into a 2D nonlinear-manifold. To extract the clean mispricing without lookback bias, we continuously track the time-varying betas using a recursive Kalman Filter updating model on a 2-year rolling window, which is more appropriate for noise reduction. And for many other reasons a longer window in comparison to the original paper works in our favor, for example, the stability in ADF stationary test and correlation, the noise of sample covariance matrix due to the dimensionality, the estimation noise of the UMAP and DBSCAN combination, and training efficacy of ML components. Then we applied the mean-reverting processes to convert spread deviations into tradable normalized scores and signals. And to account for the portfolio risk factors, we trained a causal dilated TCN model directly from pinball loss for quantiles to forecast the 1% and 5% VaR, validated against Kupiec POF.
 
 ---
 
