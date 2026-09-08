@@ -165,4 +165,3 @@ $$\text{LR}_{\text{POF}} = -2 \left[ x \ln(\alpha) + (N - x) \ln(1 - \alpha) - x
 * **Lea, C., Flynn, M. D., Vidal, R., Reiter, A., & Hager, G. D. (2017).** *Temporal convolutional networks for action segmentation and detection.* **IEEE CVPR**, 156–165 (arXiv:1611.05267, 2016).
   * *Project Role:* The original 2016/2017 formulation of hierarchical causal convolutions and temporal receptive fields for streaming sequential signals.
 * **Montana, G., Triantafyllopoulos, K., & Tsagaris, T. (2024).** *Dynamic modeling of mean-reverting for statistical arbitrage* **Statistical Finance**, (arXiv:0808.1710, 2009)
-  * *Project Role:* Theoretical justification for replacing static OLS regressions with recursive Kalman Filter state-space updates to track drifting systematic factor exposures ($\beta_t$).
