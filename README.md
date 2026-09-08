@@ -4,13 +4,13 @@ This system modernizes the classic Avellaneda & Lee (2010) framework by replacin
 
 ---
 
-## Introduction
+## Introduction.
 
  Arbitrage pricing theory framework dictates that the return of an asset is driven by an arbitrary number of macroeconomics factors, and the idiosyncratic error is a martingale difference sequence. The core objective of this project is to exploit the arbitrage opportunities from these mispricing anomalies. We extract the systematic risk factors by PCA decomposition, in potentially high dimensional PCA space. So, we performed a parametric UMAP algorithm to compress the factor exposures into a 2D nonlinear-manifold. To extract the clean mispricing without lookback bias, we continuously track the time-varying betas using a recursive Kalman Filter updating model on a 2-year rolling window, which is more appropriate for noise reduction. And for many other reasons a longer window in comparison to the original paper works in our favor, for example, the stability in ADF stationary test and correlation, the noise of sample covariance matrix due to the dimensionality, the estimation noise of the UMAP and DBSCAN combination, and training efficacy of ML components. Then we applied the mean-reverting processes to convert spread deviations into tradable normalized scores and signals. And to account for the portfolio risk factors, we trained a causal dilated TCN model directly from pinball loss for quantiles to forecast the 1% and 5% VaR, validated against Kupiec POF.
 
 ---
 
-## Theoretical Framework & Architecture
+## Theoretical Framework & Architecture. 
 
 ### 1. Market Modeling & Dimensionality Reduction
 PCA Factor Extraction: Compresses the multi-asset variance of a highly correlated equities universe into orthogonal systematic risk factors (eigenvectors) via eigendecomposition. The data matrix $X$ is standardized, and the sample covariance matrix $\Sigma$ is computed to map asset relationships:
@@ -117,7 +117,7 @@ $$\text{LR}_{\text{POF}} = -2 \left[ x \ln(\alpha) + (N - x) \ln(1 - \alpha) - x
 
 ---
 
-## Repository Structure
+## Repository Structure. 
 ```text
 ├── data/                                   # Local data cache (Gitignored except .gitkeep)
 │   └── .gitkeep
@@ -142,7 +142,7 @@ $$\text{LR}_{\text{POF}} = -2 \left[ x \ln(\alpha) + (N - x) \ln(1 - \alpha) - x
 ```
 
 ---
-## Sources 
+## Sources.  
 * **Avellaneda, M., & Lee, J.-H. (2010).** *Statistical arbitrage in the US equities market.* **Quantitative Finance**.
 * **McInnes, L., Healy, J., & Melville, J. (2018).** *UMAP: Uniform Manifold Approximation and Projection for Dimension Reduction.* **arXiv:1802.03426**.
 * **Sainburg, T., McInnes, L., & Gentner, T. Q. (2021).** *Parametric UMAP: learning embeddings with deep neural networks for representation and semi-supervised learning.* **Neural Computation**, (arXiv:2009.12981, 2020).
