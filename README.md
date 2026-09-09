@@ -4,7 +4,7 @@ This system modernizes the classic Avellaneda & Lee (2010) framework by replacin
 
 ---
 
-![Statistical arbitrage pipeline](docs/pipeline.svg)
+![Statistical arbitrage pipeline](test/pipeline.svg)
 
 
 ## Introduction.
