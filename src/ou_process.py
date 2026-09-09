@@ -60,6 +60,36 @@ class OUProcessModel:
         """Computes standardized s-score series: s_t = (x_t - theta) / sigma_eq."""
         
         params = self.fit_spread(spread_series)
+        if np.isnan(params["sigma_eq"]) or params["sigma_eq"] == 0:
+            return pd.Series(index=spread_series.index, dtype=float)
+
+        s_scores = (spread_series - params["theta"]) / params["sigma_eq"]
+        return s_scores                "theta": np.nan,
+                "sigma": np.nan,
+                "sigma_eq": np.nan,
+                "half_life": np.nan,
+            }
+
+        kappa = -np.log(b) / self.dt
+        theta = a / (1.0 - b)
+        var_zeta = np.var(x_curr - (a + b * x_lag), ddof=2)
+        sigma = np.sqrt(var_zeta * (-2.0 * np.log(b)) / (self.dt * (1.0 - b**2)))
+        sigma_eq = np.sqrt(var_zeta / (1.0 - b**2))
+        half_life = np.log(2.0) / kappa
+
+        return {
+            "kappa": kappa,
+            "theta": theta,
+            "sigma": sigma,
+            "sigma_eq": sigma_eq,
+            "half_life": half_life,
+        }
+
+    def compute_s_score(self, spread_series: pd.Series) -> pd.Series:
+        
+        """Computes standardized s-score series: s_t = (x_t - theta) / sigma_eq."""
+        
+        params = self.fit_spread(spread_series)
         if np.isnan(params["sigma_eq"]) or params["si  gma_eq"] == 0:
             return pd.Series(index=spread_series.index, dtype=float)
 
