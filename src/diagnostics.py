@@ -92,8 +92,9 @@ class SpreadDiagnostics:
                     "p_value": adf_res["p_value"],
                     "is_stationary": adf_res["is_stationary"],
                     "lag1_autocorr": lag1_corr,
-                    "tradeable": adf_res["is_stationary"]
-                    and (lag1_corr < 0 or np.isnan(lag1_corr)),
+                    "tradeable": bool(
+                        adf_res["is_stationary"] and lag1_corr < 0
+                    ),
                 }
             )
 
