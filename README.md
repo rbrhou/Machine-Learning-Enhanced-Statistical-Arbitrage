@@ -1,4 +1,4 @@
-# Machine Learning-Enhanced Statistical Arbitrage
+# Machine-Learning-Enhanced Statistical Arbitrage
 
 This system modernizes the classic Avellaneda & Lee (2010) framework by replacing static regressions with dynamic Kalman Filters, introducing non-linear manifold clustering via Parametric UMAP and DBSCAN, and applying a causal Temporal Convolutional Network (TCN) to dynamically control tail-risk exposure.
 
