@@ -50,7 +50,7 @@ Before spread modeling, the cumulative idiosyncratic residuals extracted from th
 * **Augmented Dickey-Fuller (ADF) Test:** Tests the null hypothesis ($H_0$) that the spread contains a unit root. Spreads must achieve $p < 0.05$ to reject non-stationarity and confirm mean-reverting bounds.
 * **Lag-1 Autocorrelation Screening:** Calculates the first-order serial correlation $\rho_1 = \frac{\text{Cov}(e_t, e_{t-1})}{\text{Var}(e_t)}$. The spread must exhibit negative autocorrelation ($\rho_1 < 0$) to verify that daily shocks experience a mean-reverting pull rather than trending momentum.
 
-Spreads failing either criterion are discarded before parameter estimation, preventing the model from fitting invalid parameters to random walks[cite: 1].
+Spreads failing either criterion are discarded before parameter estimation, preventing the model from fitting invalid parameters to random walks.
 
 Once the systematic PCA factors are hedged out, the remaining idiosyncratic residual spread is modeled using the Ornstein-Uhlenbeck (OU) process. This stochastic differential equation (SDE) is governed by two competing forces: a deterministic "drift" that pulls the asset back to its historical mean, and a stochastic "diffusion" representing random market noise.
 
